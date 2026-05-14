@@ -1,0 +1,10 @@
+{"id": "u01", "unit": 1, "title": "자기 관리", "topic": "일상생활과 건강 관리", "grammar_ids": ["g01", "g02", "g03"], "vocabulary_theme": ["일상생활", "건강", "습관"], "description": "자신의 일상과 건강을 관리하는 방법에 대해 이야기한다."}
+{"id": "u02", "unit": 2, "title": "여행", "topic": "여행 계획과 경험 공유", "grammar_ids": ["g04", "g05", "g06"], "vocabulary_theme": ["여행", "교통", "숙박", "관광"], "description": "여행 계획을 세우고 여행 경험을 이야기한다."}
+{"id": "u03", "unit": 3, "title": "건강", "topic": "건강 문제와 병원 이용", "grammar_ids": ["g07", "g08", "g09"], "vocabulary_theme": ["신체", "증상", "병원", "약"], "description": "몸이 아플 때 증상을 설명하고 병원을 이용하는 방법을 안다."}
+{"id": "u04", "unit": 4, "title": "관계", "topic": "인간관계와 감정 표현", "grammar_ids": ["g10", "g11", "g12"], "vocabulary_theme": ["감정", "관계", "대인관계"], "description": "다양한 인간관계에서 생기는 감정과 상황을 이야기한다."}
+{"id": "u05", "unit": 5, "title": "미디어와 정보", "topic": "뉴스, SNS, 정보 활용", "grammar_ids": ["g13", "g14", "g15"], "vocabulary_theme": ["인터넷", "SNS", "뉴스", "정보"], "description": "다양한 미디어를 활용하여 정보를 얻고 공유하는 방법을 이야기한다."}
+{"id": "u06", "unit": 6, "title": "경제생활", "topic": "소비와 저축, 쇼핑", "grammar_ids": ["g16", "g17", "g18"], "vocabulary_theme": ["쇼핑", "가격", "저축", "소비"], "description": "합리적인 소비생활과 경제적 결정에 대해 이야기한다."}
+{"id": "u07", "unit": 7, "title": "환경", "topic": "환경 문제와 환경 보호", "grammar_ids": ["g19", "g20", "g21"], "vocabulary_theme": ["환경", "기후", "재활용", "오염"], "description": "환경 문제의 원인과 해결 방법에 대해 이야기한다."}
+{"id": "u08", "unit": 8, "title": "문화", "topic": "한국 문화와 다문화 이해", "grammar_ids": ["g22", "g23", "g24"], "vocabulary_theme": ["전통", "문화", "예절", "명절"], "description": "한국의 전통문화와 다양한 문화에 대한 이해를 높인다."}
+{"id": "u09", "unit": 9, "title": "직업과 진로", "topic": "직업 선택과 미래 계획", "grammar_ids": ["g25", "g26", "g27"], "vocabulary_theme": ["직업", "취업", "면접", "진로"], "description": "다양한 직업과 미래 진로에 대해 이야기한다."}
+{"id": "u10", "unit": 10, "title": "사회", "topic": "사회 현상과 사회 문제", "grammar_ids": ["g28", "g29", "g30"], "vocabulary_theme": ["사회", "문제", "제도", "복지"], "description": "사회에서 일어나는 다양한 현상과 문제에 대해 이야기한다."}

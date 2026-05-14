@@ -1,0 +1,30 @@
+{"id": "v001", "unit": 1, "word": "규칙적으로", "pos": "부사", "meaning": "regularly", "meaning_ko": "일정한 규칙에 따라", "example": "규칙적으로 운동하면 건강해져요.", "tags": ["생활습관", "자기관리"], "difficulty": "보통"}
+{"id": "v002", "unit": 1, "word": "균형", "pos": "명사", "meaning": "balance", "meaning_ko": "어느 한쪽으로 치우치지 않은 상태", "example": "균형 잡힌 식사가 중요해요.", "tags": ["건강", "식생활"], "difficulty": "보통"}
+{"id": "v003", "unit": 1, "word": "습관", "pos": "명사", "meaning": "habit", "meaning_ko": "자주 반복하여 굳어진 행동", "example": "좋은 습관을 기르는 것이 중요해요.", "tags": ["생활습관"], "difficulty": "쉬움"}
+{"id": "v004", "unit": 1, "word": "스트레스를 풀다", "pos": "동사구", "meaning": "to relieve stress", "meaning_ko": "쌓인 스트레스를 해소하다", "example": "운동으로 스트레스를 풀어요.", "tags": ["건강", "감정"], "difficulty": "보통"}
+{"id": "v005", "unit": 1, "word": "피로", "pos": "명사", "meaning": "fatigue, tiredness", "meaning_ko": "몸이나 정신이 지쳐 힘든 상태", "example": "피로가 쌓이면 쉬어야 해요.", "tags": ["건강", "신체"], "difficulty": "보통"}
+{"id": "v006", "unit": 2, "word": "관광지", "pos": "명사", "meaning": "tourist attraction", "meaning_ko": "관광객이 많이 방문하는 곳", "example": "서울에는 유명한 관광지가 많아요.", "tags": ["여행", "장소"], "difficulty": "쉬움"}
+{"id": "v007", "unit": 2, "word": "숙박시설", "pos": "명사", "meaning": "accommodation facility", "meaning_ko": "여행 중 묵는 시설", "example": "여행 전에 숙박시설을 미리 예약했어요.", "tags": ["여행", "숙박"], "difficulty": "보통"}
+{"id": "v008", "unit": 2, "word": "일정을 짜다", "pos": "동사구", "meaning": "to plan an itinerary", "meaning_ko": "여행 계획을 세우다", "example": "여행 일정을 꼼꼼하게 짰어요.", "tags": ["여행", "계획"], "difficulty": "보통"}
+{"id": "v009", "unit": 2, "word": "현지", "pos": "명사", "meaning": "local (place)", "meaning_ko": "해당 지역, 그곳의 현장", "example": "현지 음식을 먹어 보고 싶어요.", "tags": ["여행", "문화"], "difficulty": "보통"}
+{"id": "v010", "unit": 2, "word": "배낭여행", "pos": "명사", "meaning": "backpacking", "meaning_ko": "배낭을 메고 하는 자유 여행", "example": "혼자 배낭여행을 떠났어요.", "tags": ["여행", "경험"], "difficulty": "쉬움"}
+{"id": "v011", "unit": 3, "word": "증상", "pos": "명사", "meaning": "symptom", "meaning_ko": "병이 났을 때 나타나는 몸의 변화", "example": "감기 증상이 나타났어요.", "tags": ["건강", "병원"], "difficulty": "보통"}
+{"id": "v012", "unit": 3, "word": "처방하다", "pos": "동사", "meaning": "to prescribe", "meaning_ko": "의사가 약을 지정하여 주다", "example": "의사가 약을 처방해 주었어요.", "tags": ["병원", "의료"], "difficulty": "어려움"}
+{"id": "v013", "unit": 3, "word": "면역력", "pos": "명사", "meaning": "immunity", "meaning_ko": "병에 저항하는 몸의 능력", "example": "면역력을 높이려면 잘 자야 해요.", "tags": ["건강", "신체"], "difficulty": "어려움"}
+{"id": "v014", "unit": 3, "word": "정기검진", "pos": "명사", "meaning": "regular check-up", "meaning_ko": "정기적으로 받는 건강 검사", "example": "매년 정기검진을 받는 것이 좋아요.", "tags": ["건강", "예방"], "difficulty": "어려움"}
+{"id": "v015", "unit": 3, "word": "회복하다", "pos": "동사", "meaning": "to recover", "meaning_ko": "병이나 상처에서 원래 상태로 돌아오다", "example": "충분히 쉬면 빨리 회복할 수 있어요.", "tags": ["건강", "치료"], "difficulty": "보통"}
+{"id": "v016", "unit": 4, "word": "갈등", "pos": "명사", "meaning": "conflict", "meaning_ko": "사람들 사이에 의견이나 이해관계가 맞지 않아 생기는 문제", "example": "친구 사이에 갈등이 생겼어요.", "tags": ["관계", "감정"], "difficulty": "보통"}
+{"id": "v017", "unit": 4, "word": "오해", "pos": "명사", "meaning": "misunderstanding", "meaning_ko": "잘못 이해하거나 잘못 생각하는 것", "example": "오해가 풀리면서 사이가 좋아졌어요.", "tags": ["관계", "소통"], "difficulty": "보통"}
+{"id": "v018", "unit": 4, "word": "배려하다", "pos": "동사", "meaning": "to be considerate", "meaning_ko": "남을 생각하여 도움이 되도록 하다", "example": "서로 배려하면 좋은 관계가 돼요.", "tags": ["관계", "태도"], "difficulty": "보통"}
+{"id": "v019", "unit": 5, "word": "가짜뉴스", "pos": "명사", "meaning": "fake news", "meaning_ko": "사실이 아닌 내용을 사실처럼 전달하는 뉴스", "example": "가짜뉴스를 구별하는 능력이 중요해요.", "tags": ["미디어", "정보"], "difficulty": "쉬움"}
+{"id": "v020", "unit": 5, "word": "정보를 검색하다", "pos": "동사구", "meaning": "to search for information", "meaning_ko": "필요한 정보를 찾아보다", "example": "인터넷에서 정보를 검색해요.", "tags": ["인터넷", "정보"], "difficulty": "쉬움"}
+{"id": "v021", "unit": 6, "word": "절약하다", "pos": "동사", "meaning": "to save, to be frugal", "meaning_ko": "낭비하지 않고 아껴 쓰다", "example": "에너지를 절약하는 것이 중요해요.", "tags": ["경제", "생활"], "difficulty": "쉬움"}
+{"id": "v022", "unit": 6, "word": "충동구매", "pos": "명사", "meaning": "impulse buying", "meaning_ko": "계획 없이 갑자기 물건을 사는 것", "example": "충동구매를 하지 않도록 주의해야 해요.", "tags": ["쇼핑", "소비"], "difficulty": "보통"}
+{"id": "v023", "unit": 7, "word": "온실가스", "pos": "명사", "meaning": "greenhouse gas", "meaning_ko": "지구 온난화를 일으키는 기체", "example": "온실가스를 줄이는 노력이 필요해요.", "tags": ["환경", "기후"], "difficulty": "어려움"}
+{"id": "v024", "unit": 7, "word": "재활용하다", "pos": "동사", "meaning": "to recycle", "meaning_ko": "쓰고 난 물건을 다시 사용하거나 자원으로 활용하다", "example": "쓰레기를 분리해서 재활용해요.", "tags": ["환경", "생활"], "difficulty": "쉬움"}
+{"id": "v025", "unit": 8, "word": "전통", "pos": "명사", "meaning": "tradition", "meaning_ko": "예로부터 이어져 내려오는 문화나 관습", "example": "한국의 전통 문화를 배우고 싶어요.", "tags": ["문화", "한국"], "difficulty": "쉬움"}
+{"id": "v026", "unit": 8, "word": "예절", "pos": "명사", "meaning": "etiquette, manners", "meaning_ko": "사회적으로 지켜야 할 바른 행동 방식", "example": "한국에서는 어른 앞에서 예절을 지켜야 해요.", "tags": ["문화", "사회"], "difficulty": "쉬움"}
+{"id": "v027", "unit": 9, "word": "취업하다", "pos": "동사", "meaning": "to get a job", "meaning_ko": "직업을 얻어 일을 시작하다", "example": "대학 졸업 후 취업했어요.", "tags": ["직업", "취업"], "difficulty": "쉬움"}
+{"id": "v028", "unit": 9, "word": "역량", "pos": "명사", "meaning": "competency, capability", "meaning_ko": "어떤 일을 해낼 수 있는 능력", "example": "다양한 역량을 갖추는 것이 중요해요.", "tags": ["직업", "능력"], "difficulty": "어려움"}
+{"id": "v029", "unit": 10, "word": "복지", "pos": "명사", "meaning": "welfare", "meaning_ko": "인간다운 생활을 할 수 있게 하는 사회적 지원", "example": "사회 복지 제도가 잘 되어 있어요.", "tags": ["사회", "제도"], "difficulty": "보통"}
+{"id": "v030", "unit": 10, "word": "불평등", "pos": "명사", "meaning": "inequality", "meaning_ko": "사람들 사이에 조건이나 기회가 고르지 않은 상태", "example": "경제적 불평등 문제를 해결해야 해요.", "tags": ["사회", "문제"], "difficulty": "보통"}
