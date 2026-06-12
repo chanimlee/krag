@@ -1,0 +1,25 @@
+# Textbook Inventory
+
+Inventory for selecting existing textbook reading/listening passages and constraining item generation by unit grammar and vocabulary.
+
+## Summary
+
+- textbook_records: 144
+- passage_bank_records: 50
+- reading_passages: 23
+- listening_passages: 27
+- chapter_constraints: 9
+
+## Unit Overview
+
+| unit_no | unit_title | reading passages | listening passages | grammar items | vocabulary | main grammar items | sample vocabulary | page range |
+|---:|---|---:|---:|---:|---:|---|---|---|
+| 1 | 새로운 출발 | 4 | 3 | 12 | 41 | [동]-는다고 하다<br>[형]-다고하다<br>[명]-이라고 하다<br>[동]-는다고 들었다<br>[형]-다고 들었다<br>[명]-이라고 들었다<br>[동] -어 보니(까)<br>[동] -어야겠다 | 설레다<br>떨리다<br>낯설다<br>자신이<br>있다/없다<br>만족하다<br>인상적이다<br>설레다 to flutter<br>떨리다 to be nervous<br>낯설다 to be unfamiliar with<br>이 있다/없다 to be confident in/not confident in<br>만족하다 to be satisfied with | 7-180 |
+| 2 | 날씨와 여행 | 1 | 3 | 11 | 59 | [동]-는대요<br>[형]-대(요)<br>[명]이래(요)<br>[동][형]-을 텐데<br>[명]일 텐데<br>[명]으로 유명하다<br>[동][형]-기로 유명하다<br>[동]-자고 하다 | 소나기가 내리다 sudden shower falls<br>눈이 그치다 snowing stops<br>날씨가 개다 weather clears up<br>태풍이 올라오다 typhoon ascends<br>천둥이 치다 thunder roars<br>번개가 치다 lightning strikes<br>안개가 끼다 to be foggy<br>최고 기온/최저 기온 highest temperature/lowest temperature<br>영상/영화 above O℃ / below O'C<br>(나무가) 쓰러지다 (tree) to fall down<br>(간판이) 떨어지다 (sign) to fall<br>(창문이) 부서지다 (window) to shatter | 23-184 |
+| 3 | 인터넷 콘텐츠 | 3 | 3 | 9 | 63 | [동] -자마자<br>[동] -으라고 하다 [동] -지말라고 하다<br>[동]-느냐고 하다/묻다<br>[형]-으냐고 하다/묻다<br>[명]이냐고 하다/묻다<br>[동][형]-을까봐(서)<br>(1) [동]-자마자<br>(2) [동]-으라고 하다, [동]-지 말라고 하다 | 방송되다 to be broadcasted<br>즐겨 보다 to enjoy watching<br>시청률이 높다/낮다 viewer ratings are high/low<br>반응이 좋다/나쁘다 response is good/bad<br>화제가 되다 to be the talk of the town<br>연기가 뛰어나다 acting is remarkable<br>진행을 잘하다 emceeing is good<br>내용이 지루하다 content is boring<br>영상이 멋지다 video is cool<br>눈길을 끌다 to grasp one's attention<br>베스트셀러 best seller<br>집밥 homemade food | 39-187 |
+| 4 | 약속과 만남 | 4 | 3 | 7 | 40 | 아무 [명]도<br>[명]]이나<br>피동(-이/히/리/기-)<br>(4) [동][형]-을까 봐(서)<br>(1) 아무 [명]도<br>(2) [명]이나<br>(3) 피동(-이/히/리/기-) | 한산하다 to be uncrowded<br>붐비다 to be crowded<br>가득하다 to be full<br>텅 비다 to be empty<br>장소를 정하다 to decide on a place<br>약속을 지키다 to keep one's promise<br>시간을 어기다 to not be on time<br>모임이 연기되다 gathering is postponed<br>계획이 취소되다 plan is canceled<br>약속을 잡다 to make plans<br>일정을 미루다 to postpone an appointment<br>친구를 부르다 to ask a friend to come out | 55-192 |
+| 5 | 음식과 조리법 | 2 | 3 | 9 | 73 | 누구나,언제나, 어디나 무엇이나<br>[동][형] -을 줄 모르다<br>[동][형]-어야, [명]이어야<br>[동][형] -거든요, [명]이거든(요)<br>(1) 누구나, 언제나, 어디나 무엇이나<br>(2) [동][형]-을 줄 모르다<br>(3) [동][형]-어야, [명]이어야<br>(4) [동][형]-거든(요), [명]이거든(요) | 고소하다 to be toasty/nutty<br>매콤하다 to be spicy<br>싱겁다 to be bland<br>느끼하다 to be oily<br>쫄깃하다 to be chewy<br>연하다 to be tender<br>질기다 to be tough<br>바삭하다 to be crispy<br>입이 심심하다 to have the snacking urge<br>출출하다 to be slightly hungry<br>궁중떡볶이 royal court rice cakes<br>튀김 friedfood | 71-197 |
+| 6 | 여가 생활 | 2 | 3 | 8 | 77 | [동]-나 보다, [형]-은가 보다, [명]인가 보다<br>[동]-었다가<br>[동]-을 생각/계획/예정이다<br>[동]-을 만하다<br>[동]-나 보다, [형]-은가 보다,<br>[동]-는 것 같다, [형]-은 것 같다<br>(3) [동]-을 생각/계획/예정이다<br>(4) [동]-을 만하다 | 가슴을 펴다 to straighten one's chest<br>다리를 벌리다 to spread one's legs<br>목을 돌리다 to rotate one's neck<br>몸을 젖히다 to lean back<br>옆구리를 굽히다 to bend sideways<br>손을 모으다 to gather one's hands<br>손을 허리에 대다 to stand arms akimbo<br>발뒤꿈치를 들다 to lift one's heels<br>팔을 뻗다 to stretch one's arms out<br>삐다 tosprain<br>동작 motion<br>뭉치다 to have a knot | 87-202 |
+| 7 | 소비와 절약 | 1 | 3 | 11 | 51 | [동]-는 편이다, [형]-은 편이다<br>[동]-을까 말까 (하다)<br>[형]-어하다<br>[동][형]-던<br>(1) [동]-는 편이다, [형]-은 편이다<br>(2) [동]-을까 말까 (하다)<br>[동]-을까 하다<br>(3) [형]-어하다 | 수입 income<br>지출 expense<br>늘다 to increase<br>줄다 to decrease<br>아끼다 to spare<br>절약하다 to conserve<br>저축하다 to save<br>낭비하다 to waste<br>과소비하다 to overspend<br>모자라다 to be short on<br>부족하다 to not have enough<br>충분하다 to be enough | 103-206 |
+| 8 | 한국 생활 | 4 | 3 | 10 | 61 | [동][형]-더라고요, [명]이더라고(요)<br>[동]-도록<br>[동]-을 뻔하다<br>[명]이라고 (해서) 다 [동]-는/[형]-은/[명]인 것은 아니다<br>(1) [동][형]-더라고(요), [명]이더라고(요)<br>한국에는 겨울에도 아이스커피를 마시는 사람들이 많대요.<br>맞아요. 민우 씨도 겨울에 아이스커피를 마시더라고요.<br>(2) [동]-도록 | 집을 계약하다 to sign a contract for a house<br>전기 요금이 포함되다 electricity is included<br>공과금을 납부하다 to pay the utility bill<br>세면대가 막히다 sink is clogged<br>물이 새다 water is leaking<br>전기가 나가다 electricity goes out<br>소음이 심하다 noise is too loud<br>배송이 안 되다 delivery is not made<br>하수구를 뚫다 to unclog the drain<br>전구를 갈다 to change the light bulb<br>집을 내놓다 to put one's house on the market<br>글을 올리다 to post a review | 119-210 |
+| 9 | 사건과 사고 | 2 | 3 | 8 | 71 | [동]-는다고요, [형]-다고요, [명]이라고요<br>[동]-다(가)<br>[명]만 하다<br>[동]-어지다<br>(1) [동]-는다고(요), [형]-다고(요), [명]이라고(요)<br>(2) [동]-다(가)<br>(3) [명]만 하다<br>(4) [동]-어지다 | 물에 빠지다 to fall into the water<br>문에 끼이다 to get stuck in between aa door<br>뱀에게 물리다 to be bitten by a snake<br>엘리베이터에 갇히다 to be trapped in an elevator<br>교통사고가 나다 to get into a car accident<br>음주 운전을 하다 to drink and drive<br>과속을 하다 to speed<br>신호를 어기다 to run a red light<br>삐다 to sprain<br>부러지다 to break<br>찢어지다 to be torn<br>꿰매다 to stitch | 135-215 |

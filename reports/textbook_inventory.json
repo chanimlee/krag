@@ -1,0 +1,339 @@
+{
+  "source_files": {
+    "textbook": "rag_jsonl_output/textbook.jsonl",
+    "grammar": "rag_jsonl_output/grammar.jsonl",
+    "vocab": "rag_jsonl_output/vocab.jsonl"
+  },
+  "summary": {
+    "textbook_records": 144,
+    "passage_bank_records": 50,
+    "reading_passages": 23,
+    "listening_passages": 27,
+    "chapter_constraints": 9
+  },
+  "units": [
+    {
+      "unit_no": 1,
+      "unit_title": "새로운 출발",
+      "reading_passage_count": 4,
+      "listening_passage_count": 3,
+      "grammar_item_count": 12,
+      "vocabulary_count": 41,
+      "sample_grammar_items": [
+        "[동]-는다고 하다",
+        "[형]-다고하다",
+        "[명]-이라고 하다",
+        "[동]-는다고 들었다",
+        "[형]-다고 들었다",
+        "[명]-이라고 들었다",
+        "[동] -어 보니(까)",
+        "[동] -어야겠다"
+      ],
+      "sample_vocabulary": [
+        "설레다",
+        "떨리다",
+        "낯설다",
+        "자신이",
+        "있다/없다",
+        "만족하다",
+        "인상적이다",
+        "설레다 to flutter",
+        "떨리다 to be nervous",
+        "낯설다 to be unfamiliar with",
+        "이 있다/없다 to be confident in/not confident in",
+        "만족하다 to be satisfied with"
+      ],
+      "page_range": [
+        7,
+        180
+      ]
+    },
+    {
+      "unit_no": 2,
+      "unit_title": "날씨와 여행",
+      "reading_passage_count": 1,
+      "listening_passage_count": 3,
+      "grammar_item_count": 11,
+      "vocabulary_count": 59,
+      "sample_grammar_items": [
+        "[동]-는대요",
+        "[형]-대(요)",
+        "[명]이래(요)",
+        "[동][형]-을 텐데",
+        "[명]일 텐데",
+        "[명]으로 유명하다",
+        "[동][형]-기로 유명하다",
+        "[동]-자고 하다"
+      ],
+      "sample_vocabulary": [
+        "소나기가 내리다 sudden shower falls",
+        "눈이 그치다 snowing stops",
+        "날씨가 개다 weather clears up",
+        "태풍이 올라오다 typhoon ascends",
+        "천둥이 치다 thunder roars",
+        "번개가 치다 lightning strikes",
+        "안개가 끼다 to be foggy",
+        "최고 기온/최저 기온 highest temperature/lowest temperature",
+        "영상/영화 above O℃ / below O'C",
+        "(나무가) 쓰러지다 (tree) to fall down",
+        "(간판이) 떨어지다 (sign) to fall",
+        "(창문이) 부서지다 (window) to shatter"
+      ],
+      "page_range": [
+        23,
+        184
+      ]
+    },
+    {
+      "unit_no": 3,
+      "unit_title": "인터넷 콘텐츠",
+      "reading_passage_count": 3,
+      "listening_passage_count": 3,
+      "grammar_item_count": 9,
+      "vocabulary_count": 63,
+      "sample_grammar_items": [
+        "[동] -자마자",
+        "[동] -으라고 하다 [동] -지말라고 하다",
+        "[동]-느냐고 하다/묻다",
+        "[형]-으냐고 하다/묻다",
+        "[명]이냐고 하다/묻다",
+        "[동][형]-을까봐(서)",
+        "(1) [동]-자마자",
+        "(2) [동]-으라고 하다, [동]-지 말라고 하다"
+      ],
+      "sample_vocabulary": [
+        "방송되다 to be broadcasted",
+        "즐겨 보다 to enjoy watching",
+        "시청률이 높다/낮다 viewer ratings are high/low",
+        "반응이 좋다/나쁘다 response is good/bad",
+        "화제가 되다 to be the talk of the town",
+        "연기가 뛰어나다 acting is remarkable",
+        "진행을 잘하다 emceeing is good",
+        "내용이 지루하다 content is boring",
+        "영상이 멋지다 video is cool",
+        "눈길을 끌다 to grasp one's attention",
+        "베스트셀러 best seller",
+        "집밥 homemade food"
+      ],
+      "page_range": [
+        39,
+        187
+      ]
+    },
+    {
+      "unit_no": 4,
+      "unit_title": "약속과 만남",
+      "reading_passage_count": 4,
+      "listening_passage_count": 3,
+      "grammar_item_count": 7,
+      "vocabulary_count": 40,
+      "sample_grammar_items": [
+        "아무 [명]도",
+        "[명]]이나",
+        "피동(-이/히/리/기-)",
+        "(4) [동][형]-을까 봐(서)",
+        "(1) 아무 [명]도",
+        "(2) [명]이나",
+        "(3) 피동(-이/히/리/기-)"
+      ],
+      "sample_vocabulary": [
+        "한산하다 to be uncrowded",
+        "붐비다 to be crowded",
+        "가득하다 to be full",
+        "텅 비다 to be empty",
+        "장소를 정하다 to decide on a place",
+        "약속을 지키다 to keep one's promise",
+        "시간을 어기다 to not be on time",
+        "모임이 연기되다 gathering is postponed",
+        "계획이 취소되다 plan is canceled",
+        "약속을 잡다 to make plans",
+        "일정을 미루다 to postpone an appointment",
+        "친구를 부르다 to ask a friend to come out"
+      ],
+      "page_range": [
+        55,
+        192
+      ]
+    },
+    {
+      "unit_no": 5,
+      "unit_title": "음식과 조리법",
+      "reading_passage_count": 2,
+      "listening_passage_count": 3,
+      "grammar_item_count": 9,
+      "vocabulary_count": 73,
+      "sample_grammar_items": [
+        "누구나,언제나, 어디나 무엇이나",
+        "[동][형] -을 줄 모르다",
+        "[동][형]-어야, [명]이어야",
+        "[동][형] -거든요, [명]이거든(요)",
+        "(1) 누구나, 언제나, 어디나 무엇이나",
+        "(2) [동][형]-을 줄 모르다",
+        "(3) [동][형]-어야, [명]이어야",
+        "(4) [동][형]-거든(요), [명]이거든(요)"
+      ],
+      "sample_vocabulary": [
+        "고소하다 to be toasty/nutty",
+        "매콤하다 to be spicy",
+        "싱겁다 to be bland",
+        "느끼하다 to be oily",
+        "쫄깃하다 to be chewy",
+        "연하다 to be tender",
+        "질기다 to be tough",
+        "바삭하다 to be crispy",
+        "입이 심심하다 to have the snacking urge",
+        "출출하다 to be slightly hungry",
+        "궁중떡볶이 royal court rice cakes",
+        "튀김 friedfood"
+      ],
+      "page_range": [
+        71,
+        197
+      ]
+    },
+    {
+      "unit_no": 6,
+      "unit_title": "여가 생활",
+      "reading_passage_count": 2,
+      "listening_passage_count": 3,
+      "grammar_item_count": 8,
+      "vocabulary_count": 77,
+      "sample_grammar_items": [
+        "[동]-나 보다, [형]-은가 보다, [명]인가 보다",
+        "[동]-었다가",
+        "[동]-을 생각/계획/예정이다",
+        "[동]-을 만하다",
+        "[동]-나 보다, [형]-은가 보다,",
+        "[동]-는 것 같다, [형]-은 것 같다",
+        "(3) [동]-을 생각/계획/예정이다",
+        "(4) [동]-을 만하다"
+      ],
+      "sample_vocabulary": [
+        "가슴을 펴다 to straighten one's chest",
+        "다리를 벌리다 to spread one's legs",
+        "목을 돌리다 to rotate one's neck",
+        "몸을 젖히다 to lean back",
+        "옆구리를 굽히다 to bend sideways",
+        "손을 모으다 to gather one's hands",
+        "손을 허리에 대다 to stand arms akimbo",
+        "발뒤꿈치를 들다 to lift one's heels",
+        "팔을 뻗다 to stretch one's arms out",
+        "삐다 tosprain",
+        "동작 motion",
+        "뭉치다 to have a knot"
+      ],
+      "page_range": [
+        87,
+        202
+      ]
+    },
+    {
+      "unit_no": 7,
+      "unit_title": "소비와 절약",
+      "reading_passage_count": 1,
+      "listening_passage_count": 3,
+      "grammar_item_count": 11,
+      "vocabulary_count": 51,
+      "sample_grammar_items": [
+        "[동]-는 편이다, [형]-은 편이다",
+        "[동]-을까 말까 (하다)",
+        "[형]-어하다",
+        "[동][형]-던",
+        "(1) [동]-는 편이다, [형]-은 편이다",
+        "(2) [동]-을까 말까 (하다)",
+        "[동]-을까 하다",
+        "(3) [형]-어하다"
+      ],
+      "sample_vocabulary": [
+        "수입 income",
+        "지출 expense",
+        "늘다 to increase",
+        "줄다 to decrease",
+        "아끼다 to spare",
+        "절약하다 to conserve",
+        "저축하다 to save",
+        "낭비하다 to waste",
+        "과소비하다 to overspend",
+        "모자라다 to be short on",
+        "부족하다 to not have enough",
+        "충분하다 to be enough"
+      ],
+      "page_range": [
+        103,
+        206
+      ]
+    },
+    {
+      "unit_no": 8,
+      "unit_title": "한국 생활",
+      "reading_passage_count": 4,
+      "listening_passage_count": 3,
+      "grammar_item_count": 10,
+      "vocabulary_count": 61,
+      "sample_grammar_items": [
+        "[동][형]-더라고요, [명]이더라고(요)",
+        "[동]-도록",
+        "[동]-을 뻔하다",
+        "[명]이라고 (해서) 다 [동]-는/[형]-은/[명]인 것은 아니다",
+        "(1) [동][형]-더라고(요), [명]이더라고(요)",
+        "한국에는 겨울에도 아이스커피를 마시는 사람들이 많대요.",
+        "맞아요. 민우 씨도 겨울에 아이스커피를 마시더라고요.",
+        "(2) [동]-도록"
+      ],
+      "sample_vocabulary": [
+        "집을 계약하다 to sign a contract for a house",
+        "전기 요금이 포함되다 electricity is included",
+        "공과금을 납부하다 to pay the utility bill",
+        "세면대가 막히다 sink is clogged",
+        "물이 새다 water is leaking",
+        "전기가 나가다 electricity goes out",
+        "소음이 심하다 noise is too loud",
+        "배송이 안 되다 delivery is not made",
+        "하수구를 뚫다 to unclog the drain",
+        "전구를 갈다 to change the light bulb",
+        "집을 내놓다 to put one's house on the market",
+        "글을 올리다 to post a review"
+      ],
+      "page_range": [
+        119,
+        210
+      ]
+    },
+    {
+      "unit_no": 9,
+      "unit_title": "사건과 사고",
+      "reading_passage_count": 2,
+      "listening_passage_count": 3,
+      "grammar_item_count": 8,
+      "vocabulary_count": 71,
+      "sample_grammar_items": [
+        "[동]-는다고요, [형]-다고요, [명]이라고요",
+        "[동]-다(가)",
+        "[명]만 하다",
+        "[동]-어지다",
+        "(1) [동]-는다고(요), [형]-다고(요), [명]이라고(요)",
+        "(2) [동]-다(가)",
+        "(3) [명]만 하다",
+        "(4) [동]-어지다"
+      ],
+      "sample_vocabulary": [
+        "물에 빠지다 to fall into the water",
+        "문에 끼이다 to get stuck in between aa door",
+        "뱀에게 물리다 to be bitten by a snake",
+        "엘리베이터에 갇히다 to be trapped in an elevator",
+        "교통사고가 나다 to get into a car accident",
+        "음주 운전을 하다 to drink and drive",
+        "과속을 하다 to speed",
+        "신호를 어기다 to run a red light",
+        "삐다 to sprain",
+        "부러지다 to break",
+        "찢어지다 to be torn",
+        "꿰매다 to stitch"
+      ],
+      "page_range": [
+        135,
+        215
+      ]
+    }
+  ]
+}

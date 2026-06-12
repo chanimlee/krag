@@ -1,0 +1,34 @@
+{
+  "units": [
+    3
+  ],
+  "total_items": 6,
+  "reading_ratio": 1.0,
+  "listening_ratio": 0.0,
+  "reading_items": 6,
+  "listening_items": 0,
+  "reading_item_types": {
+    "content_match": 2,
+    "detail_info": 2,
+    "main_idea": 1,
+    "inference": 1,
+    "blank_completion": 0
+  },
+  "listening_item_types": {
+    "content_match": 0,
+    "detail_info": 0,
+    "main_idea": 0,
+    "inference": 0
+  },
+  "unit_blueprints": [
+    {
+      "unit_no": 3,
+      "unit_title": "인터넷 콘텐츠",
+      "reading_passage_count": 3,
+      "listening_passage_count": 3,
+      "reading_items": 6,
+      "listening_items": 0,
+      "total_items": 6
+    }
+  ]
+}

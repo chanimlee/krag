@@ -2,7 +2,9 @@
 
 ## 1. 프로젝트 목적
 
-이 프로젝트는 한국어 숙달도 평가, 특히 한국어 읽기 평가 문항 자동 생성을 위한 RAG 기반 데이터셋과 생성 파이프라인을 구축하는 연구이다. 현재 단계의 목표는 한국어 교재 지식과 TOPIK 예시 문항을 재현 가능한 JSONL 데이터 기반으로 정리하고, 이후 Prompt-only, Knowledge-RAG, Example-RAG, Hybrid-RAG 조건을 비교할 수 있도록 검증 가능한 출발점을 마련하는 것이다.
+이 프로젝트는 한국어 교사가 특정 한국어 교재를 한 학기 동안 수업한 뒤, 학기말 평가 문항을 쉽게 만들 수 있도록 돕는 RAG 기반 문항 생성 보조 시스템을 구축하는 연구이다.
+
+현재 단계의 목표는 새로운 지문 생성이 아니다. 기존 교재에 있는 읽기 지문과 듣기 지문을 바탕으로, 문제와 선택지만 생성하는 것이다. 문항 생성 시 문법과 어휘는 해당 단원 범위 안으로 제한하고, 정답과 오답 선택지는 모두 기존 지문에 근거해야 한다.
 
 ## 2. 현재 기준 작업 폴더
 
@@ -44,6 +46,8 @@ rag_jsonl_output/vocab.jsonl
 rag_jsonl_output/grammar.jsonl
 rag_jsonl_output/textbook_knowledge.jsonl
 rag_jsonl_output/sample_question.jsonl
+rag_jsonl_output/passage_bank.jsonl
+rag_jsonl_output/chapter_constraints.jsonl
 ```
 
 ## 6. JSONL 재생성 명령
@@ -102,8 +106,6 @@ vacab.md 잔존 없음: 통과
 ```
 
 이번 점검에서 `vacab.md` 오타를 `vocab.md`로 수정했다. 또한 일부 단원 도입 레코드의 `text`가 비어 있어, 스키마와 id 규칙은 유지한 채 `text`가 비는 경우에만 단원명, 쪽수, 활동 영역을 최소 검색 텍스트로 채우도록 파서를 보강했다.
-
-## 10. 다음 단계 제안
 
 ## 10. TF-IDF 검색 baseline
 
@@ -205,17 +207,45 @@ docs/retrieval_evaluation_guide.md
 
 평가 파일은 15개 질의에 대해 knowledge top-5와 examples top-5를 포함하므로 총 150개 평가 행을 가진다. 다음 단계에서는 사람이 `relevance`, `usefulness_for_item_generation`, `error_type`, `reviewer_note` 열을 채우면 된다.
 
-## 13. 다음 단계 제안
+## 13. Textbook passage inventory and exam blueprint
 
-아직 구현하지 않은 다음 단계 후보는 아래와 같다.
+기존 교재 지문 기반 문항 생성을 위해 교재 인벤토리를 추가했다.
 
-- FAISS 또는 Chroma 기반 검색 인덱스 구축
-- 검색 품질 테스트
-- `textbook_knowledge.jsonl`을 지식 DB로 사용하는 Knowledge-RAG
-- `sample_question.jsonl`을 문항 유형 예시 DB로 사용하는 Example-RAG
-- 두 DB를 결합하는 Hybrid-RAG
-- Prompt-only / Knowledge-RAG / Example-RAG / Hybrid-RAG 비교 실험 설계
-- 사람 검토용 문항 평가 양식 설계
-- smoke test 결과 사람 검토
-- semantic embedding retriever 추가 여부 결정
-- 또는 문항 생성 파이프라인 설계
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_textbook_inventory.py
+```
+
+주요 출력:
+
+```text
+rag_jsonl_output/passage_bank.jsonl
+rag_jsonl_output/chapter_constraints.jsonl
+reports/textbook_inventory.json
+reports/textbook_inventory.md
+```
+
+`passage_bank.jsonl`은 기존 교재의 읽기/듣기 지문을 문항 생성 대상으로 정리한다. `chapter_constraints.jsonl`은 단원별 문법·어휘 제약으로 사용한다.
+
+시험 구성안 예시는 다음 명령으로 생성한다.
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\propose_exam_blueprint.py --units 1-9 --total-items 30 --output reports/exam_blueprint_u01_u09_30items.json
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\propose_exam_blueprint.py --units 3 --total-items 6 --reading-ratio 1.0 --listening-ratio 0.0 --output reports/exam_blueprint_u03_6items_reading.json
+```
+
+문항 생성 프롬프트 설계 초안은 다음 문서에 있다. 아직 LLM API 호출은 구현하지 않았다.
+
+```text
+docs/item_generation_prompt_template.md
+```
+
+## 14. 다음 단계 제안
+
+현재 목표에 맞춘 다음 단계 후보는 아래와 같다.
+
+- 사용자가 단원과 총 문항 수를 지정하는 설정 파일 설계
+- `passage_bank.jsonl`에서 사용할 기존 읽기/듣기 지문을 선택하는 스크립트 구현
+- 선택 지문 기반 문항 생성 draft pipeline 구현
+- 생성 문항 검증 스크립트 설계
+- 교사용 출력 형식 설계
+- 이후 필요 시 semantic retriever 추가 여부 결정

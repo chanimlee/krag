@@ -1,0 +1,114 @@
+{
+  "units": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "total_items": 30,
+  "reading_ratio": 0.7,
+  "listening_ratio": 0.3,
+  "reading_items": 21,
+  "listening_items": 9,
+  "reading_item_types": {
+    "content_match": 9,
+    "detail_info": 5,
+    "main_idea": 4,
+    "inference": 2,
+    "blank_completion": 1
+  },
+  "listening_item_types": {
+    "content_match": 4,
+    "detail_info": 3,
+    "main_idea": 1,
+    "inference": 1
+  },
+  "unit_blueprints": [
+    {
+      "unit_no": 1,
+      "unit_title": "새로운 출발",
+      "reading_passage_count": 4,
+      "listening_passage_count": 3,
+      "reading_items": 3,
+      "listening_items": 1,
+      "total_items": 4
+    },
+    {
+      "unit_no": 2,
+      "unit_title": "날씨와 여행",
+      "reading_passage_count": 1,
+      "listening_passage_count": 3,
+      "reading_items": 2,
+      "listening_items": 1,
+      "total_items": 3
+    },
+    {
+      "unit_no": 3,
+      "unit_title": "인터넷 콘텐츠",
+      "reading_passage_count": 3,
+      "listening_passage_count": 3,
+      "reading_items": 3,
+      "listening_items": 1,
+      "total_items": 4
+    },
+    {
+      "unit_no": 4,
+      "unit_title": "약속과 만남",
+      "reading_passage_count": 4,
+      "listening_passage_count": 3,
+      "reading_items": 3,
+      "listening_items": 1,
+      "total_items": 4
+    },
+    {
+      "unit_no": 5,
+      "unit_title": "음식과 조리법",
+      "reading_passage_count": 2,
+      "listening_passage_count": 3,
+      "reading_items": 2,
+      "listening_items": 1,
+      "total_items": 3
+    },
+    {
+      "unit_no": 6,
+      "unit_title": "여가 생활",
+      "reading_passage_count": 2,
+      "listening_passage_count": 3,
+      "reading_items": 2,
+      "listening_items": 1,
+      "total_items": 3
+    },
+    {
+      "unit_no": 7,
+      "unit_title": "소비와 절약",
+      "reading_passage_count": 1,
+      "listening_passage_count": 3,
+      "reading_items": 1,
+      "listening_items": 1,
+      "total_items": 2
+    },
+    {
+      "unit_no": 8,
+      "unit_title": "한국 생활",
+      "reading_passage_count": 4,
+      "listening_passage_count": 3,
+      "reading_items": 3,
+      "listening_items": 1,
+      "total_items": 4
+    },
+    {
+      "unit_no": 9,
+      "unit_title": "사건과 사고",
+      "reading_passage_count": 2,
+      "listening_passage_count": 3,
+      "reading_items": 2,
+      "listening_items": 1,
+      "total_items": 3
+    }
+  ]
+}
