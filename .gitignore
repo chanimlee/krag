@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# RAG generated indices
+rag_index/
+
+# Backups
+rag_jsonl_output_backup_*/
+
+# Temporary reports
+reports/*.tmp
+
+# Large / copyrighted source PDFs
+*.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

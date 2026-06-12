@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+joblib
+
+# Later optional dependencies:
+# sentence-transformers
+# faiss-cpu
+# chromadb

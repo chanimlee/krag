@@ -1,0 +1,77 @@
+{
+  "output_dir": "C:\\Users\\chani\\OneDrive\\OneDrive_cylee\\연구\\학회 발표\\20260718_이중언어학회 국제학술대회\\RAG workstation\\rag_jsonl_output",
+  "files": {
+    "textbook.jsonl": {
+      "path": "C:\\Users\\chani\\OneDrive\\OneDrive_cylee\\연구\\학회 발표\\20260718_이중언어학회 국제학술대회\\RAG workstation\\rag_jsonl_output\\textbook.jsonl",
+      "record_count": 144,
+      "valid_jsonl": true,
+      "parse_errors": [],
+      "missing_id_lines": [],
+      "duplicate_ids": [],
+      "empty_text_records": []
+    },
+    "vocab.jsonl": {
+      "path": "C:\\Users\\chani\\OneDrive\\OneDrive_cylee\\연구\\학회 발표\\20260718_이중언어학회 국제학술대회\\RAG workstation\\rag_jsonl_output\\vocab.jsonl",
+      "record_count": 549,
+      "valid_jsonl": true,
+      "parse_errors": [],
+      "missing_id_lines": [],
+      "duplicate_ids": [],
+      "empty_text_records": []
+    },
+    "grammar.jsonl": {
+      "path": "C:\\Users\\chani\\OneDrive\\OneDrive_cylee\\연구\\학회 발표\\20260718_이중언어학회 국제학술대회\\RAG workstation\\rag_jsonl_output\\grammar.jsonl",
+      "record_count": 35,
+      "valid_jsonl": true,
+      "parse_errors": [],
+      "missing_id_lines": [],
+      "duplicate_ids": [],
+      "empty_text_records": []
+    },
+    "textbook_knowledge.jsonl": {
+      "path": "C:\\Users\\chani\\OneDrive\\OneDrive_cylee\\연구\\학회 발표\\20260718_이중언어학회 국제학술대회\\RAG workstation\\rag_jsonl_output\\textbook_knowledge.jsonl",
+      "record_count": 728,
+      "valid_jsonl": true,
+      "parse_errors": [],
+      "missing_id_lines": [],
+      "duplicate_ids": [],
+      "empty_text_records": []
+    },
+    "sample_question.jsonl": {
+      "path": "C:\\Users\\chani\\OneDrive\\OneDrive_cylee\\연구\\학회 발표\\20260718_이중언어학회 국제학술대회\\RAG workstation\\rag_jsonl_output\\sample_question.jsonl",
+      "record_count": 119,
+      "valid_jsonl": true,
+      "parse_errors": [],
+      "missing_id_lines": [],
+      "duplicate_ids": [],
+      "empty_text_records": []
+    }
+  },
+  "checks": {
+    "record_counts": {
+      "textbook.jsonl": 144,
+      "vocab.jsonl": 549,
+      "grammar.jsonl": 35,
+      "textbook_knowledge.jsonl": 728,
+      "sample_question.jsonl": 119
+    },
+    "textbook_knowledge_sum": {
+      "passed": true,
+      "expected": 728,
+      "actual": 728
+    },
+    "sample_question_required_fields": {
+      "passed": true,
+      "missing_fields": []
+    },
+    "sample_question_options": {
+      "passed": true,
+      "bad_options": []
+    },
+    "vacab_md_absent": {
+      "passed": true,
+      "hits": []
+    }
+  },
+  "passed": true
+}
