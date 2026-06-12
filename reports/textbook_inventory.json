@@ -6,28 +6,62 @@
   },
   "summary": {
     "textbook_records": 144,
-    "passage_bank_records": 214,
-    "reading_passages": 145,
+    "passage_bank_records": 215,
+    "reading_passages": 146,
     "listening_passages": 69,
-    "usable_exam_passages": 128,
+    "usable_exam_passages": 135,
     "chapter_constraints": 9,
     "unit2_expected_passage_check": {
       "passed": true,
       "items": {
         "딸기 축제 대화": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_reading_003",
+              "source_activity": "speaking",
+              "candidate_type": "reusable_dialogue",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
           "passage_ids": [
             "passage_u02_reading_003"
           ]
         },
         "태풍 ‘나비’ 일기예보": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_listening_002",
+              "source_activity": "listening",
+              "candidate_type": "core_listening",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
           "passage_ids": [
             "passage_u02_listening_002"
           ]
         },
         "발리 여행 계획 대화": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_listening_003",
+              "source_activity": "listening",
+              "candidate_type": "core_listening",
+              "usable_for_exam": true,
+              "priority": "high"
+            },
+            {
+              "id": "passage_u02_listening_005",
+              "source_activity": "listening",
+              "candidate_type": "guide",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
           "passage_ids": [
             "passage_u02_listening_003",
             "passage_u02_listening_005"
@@ -35,32 +69,217 @@
         },
         "발리에서 제주도로 여행 계획을 변경하는 대화": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_listening_006",
+              "source_activity": "listening",
+              "candidate_type": "core_listening",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
           "passage_ids": [
             "passage_u02_listening_006"
           ]
         },
         "여행사랑 카페 요청 글": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_reading_006",
+              "source_activity": "reading",
+              "candidate_type": "blog",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
           "passage_ids": [
             "passage_u02_reading_006"
           ]
         },
         "오로라 투어 안내문": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_reading_007",
+              "source_activity": "reading",
+              "candidate_type": "reusable_dialogue",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
           "passage_ids": [
             "passage_u02_reading_007"
           ]
         },
         "수원 1박 2일 여행 안내 글": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_reading_009",
+              "source_activity": "reading",
+              "candidate_type": "guide",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
           "passage_ids": [
             "passage_u02_reading_009"
           ]
         },
         "꽃샘추위 설명문": {
           "found": true,
+          "matches": [
+            {
+              "id": "passage_u02_reading_017",
+              "source_activity": "culture",
+              "candidate_type": "culture_text",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
           "passage_ids": [
             "passage_u02_reading_017"
+          ]
+        }
+      }
+    },
+    "unit5_expected_passage_check": {
+      "passed": true,
+      "items": {
+        "영화 보기 전 국수/튀김 대화": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_reading_003",
+              "source_activity": "speaking",
+              "candidate_type": "reusable_dialogue",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_reading_003"
+          ]
+        },
+        "로티를 만들어 먹는 대화": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_reading_005",
+              "source_activity": "speaking",
+              "candidate_type": "reusable_dialogue",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_reading_005"
+          ]
+        },
+        "꿀떡 광고": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_listening_002",
+              "source_activity": "listening",
+              "candidate_type": "ad",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_listening_002"
+          ]
+        },
+        "고기 안 들어간 한국 음식 대화": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_listening_003",
+              "source_activity": "listening",
+              "candidate_type": "core_listening",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_listening_003"
+          ]
+        },
+        "김밥 맛집 대화": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_listening_006",
+              "source_activity": "listening",
+              "candidate_type": "core_listening",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_listening_006"
+          ]
+        },
+        "집들이 음식 추천: 궁중떡볶이": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_reading_007",
+              "source_activity": "reading",
+              "candidate_type": "qna_reading",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_reading_007"
+          ]
+        },
+        "불고기 만들기": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_reading_008",
+              "source_activity": "reading",
+              "candidate_type": "recipe",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_reading_008"
+          ]
+        },
+        "언제나 그리운 내 고향 음식, 쌀국수": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_reading_010",
+              "source_activity": "reading",
+              "candidate_type": "recipe",
+              "usable_for_exam": true,
+              "priority": "high"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_reading_010"
+          ]
+        },
+        "국과 찌개": {
+          "found": true,
+          "matches": [
+            {
+              "id": "passage_u05_reading_016",
+              "source_activity": "culture",
+              "candidate_type": "culture_text",
+              "usable_for_exam": true,
+              "priority": "medium"
+            }
+          ],
+          "passage_ids": [
+            "passage_u05_reading_016"
           ]
         }
       }
@@ -166,16 +385,16 @@
       "unit_title": "인터넷 콘텐츠",
       "reading_passage_count": 17,
       "listening_passage_count": 8,
-      "usable_reading_passage_count": 10,
+      "usable_reading_passage_count": 11,
       "usable_listening_passage_count": 4,
       "candidate_type_counts": {
         "article": 1,
         "core_listening": 3,
         "core_reading": 2,
         "culture_text": 2,
-        "etc": 11,
+        "etc": 10,
         "guide": 1,
-        "reusable_dialogue": 3,
+        "reusable_dialogue": 4,
         "task_text": 2
       },
       "grammar_item_count": 9,
@@ -214,16 +433,16 @@
       "unit_title": "약속과 만남",
       "reading_passage_count": 15,
       "listening_passage_count": 6,
-      "usable_reading_passage_count": 10,
+      "usable_reading_passage_count": 11,
       "usable_listening_passage_count": 4,
       "candidate_type_counts": {
         "blog": 2,
         "core_listening": 3,
         "core_reading": 3,
         "culture_text": 1,
-        "etc": 7,
+        "etc": 6,
         "guide": 1,
-        "reusable_dialogue": 3,
+        "reusable_dialogue": 4,
         "task_text": 1
       },
       "grammar_item_count": 7,
@@ -259,17 +478,19 @@
     {
       "unit_no": 5,
       "unit_title": "음식과 조리법",
-      "reading_passage_count": 15,
+      "reading_passage_count": 16,
       "listening_passage_count": 9,
-      "usable_reading_passage_count": 7,
+      "usable_reading_passage_count": 11,
       "usable_listening_passage_count": 4,
       "candidate_type_counts": {
+        "ad": 1,
         "blog": 1,
-        "core_listening": 3,
-        "core_reading": 1,
+        "core_listening": 2,
         "culture_text": 1,
-        "etc": 13,
-        "reusable_dialogue": 3,
+        "etc": 10,
+        "qna_reading": 1,
+        "recipe": 3,
+        "reusable_dialogue": 4,
         "task_text": 2
       },
       "grammar_item_count": 9,
@@ -308,15 +529,15 @@
       "unit_title": "여가 생활",
       "reading_passage_count": 15,
       "listening_passage_count": 7,
-      "usable_reading_passage_count": 7,
+      "usable_reading_passage_count": 8,
       "usable_listening_passage_count": 3,
       "candidate_type_counts": {
         "blog": 1,
         "core_listening": 3,
         "core_reading": 1,
         "culture_text": 2,
-        "etc": 12,
-        "reusable_dialogue": 1,
+        "etc": 11,
+        "reusable_dialogue": 2,
         "task_text": 2
       },
       "grammar_item_count": 8,

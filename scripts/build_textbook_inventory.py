@@ -25,6 +25,18 @@ UNIT2_EXPECTED_PASSAGES = {
     "꽃샘추위 설명문": ["꽃샘추위", "일교차"],
 }
 
+UNIT5_EXPECTED_PASSAGES = {
+    "영화 보기 전 국수/튀김 대화": ["점심을 일찍 먹어서", "이렇게 맛있을 줄 몰랐어요"],
+    "로티를 만들어 먹는 대화": ["아침을 일찍 먹어서", "우리 고향 사람들이 즐겨 먹어요"],
+    "꿀떡 광고": ["아침 식사를 거르는", "꿀떡", "주문해 보세요"],
+    "고기 안 들어간 한국 음식 대화": ["히엔 씨", "식당이 정해지면 다시 말씀드릴게요"],
+    "김밥 맛집 대화": ["다리가 너무 아파", "누구나 다 좋아할 것 같아"],
+    "집들이 음식 추천: 궁중떡볶이": ["집들이", "궁중떡볶이", "한번 만들어 보세요"],
+    "불고기 만들기": ["불고기 만들기", "과일을 넣으면 더 맛있거든요"],
+    "언제나 그리운 내 고향 음식, 쌀국수": ["언제나 그리운 내 고향 음식, 쌀국수", "직접 만든 쌀국수를 드셔 보는 건 어떠세요"],
+    "국과 찌개": ["국과 찌개", "끓인 것은 '찌개"],
+}
+
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
@@ -113,6 +125,14 @@ def has_dialogue_markers(text: str) -> bool:
     return len(re.findall(r"(?:^|\s)[가-힣A-Za-z]{1,8}:", text)) >= 2 or ("남:" in text and "여:" in text)
 
 
+def has_unlabeled_dialogue_shape(text: str) -> bool:
+    if has_dialogue_markers(text):
+        return True
+    short_question_turns = len(re.findall(r"(?:요\?|까\?|예요\?|뭐예요\?)", text))
+    first_person_turns = len(re.findall(r"(?:저는|같이|네\.|그래요|뭐예요|어때요)", text))
+    return short_question_turns >= 2 and first_person_turns >= 3
+
+
 def sentence_like_count(text: str) -> int:
     return len(re.findall(r"(?:다|요|까|죠|지|네|습니다|습니까|세요)[.!?]?(?:\s|$)", text))
 
@@ -135,19 +155,29 @@ def looks_like_list_only(text: str) -> bool:
 
 def usable_text_candidate(text: str, strong_source: bool) -> bool:
     text = clean_text(text)
-    if not text or looks_like_list_only(text):
+    if not text:
         return False
     if strong_source:
         return len(text) >= 45
-    return has_dialogue_markers(text) or sentence_like_count(text) >= 2
+    if looks_like_list_only(text):
+        return False
+    return has_dialogue_markers(text) or has_unlabeled_dialogue_shape(text) or sentence_like_count(text) >= 2
 
 
 def infer_candidate_type(record: dict[str, Any], text: str, title: str, strong_source: bool) -> tuple[str, str, bool, str]:
     activity = source_activity(record)
     combined = f"{title} {text}"
+    if "불고기 만들기" in combined or "만드는 방법" in combined or "조리법" in combined or "만들려면" in combined:
+        if "질문" in combined and "어때요" in combined and "추천" in combined:
+            return "qna_reading", "high", True, "Question-answer recommendation text reusable as a reading item passage."
+        return "recipe", "high", True, "Recipe/procedure text reusable as a reading item passage."
     if activity == "listening" and (strong_source or title == "듣기 지문"):
+        if "광고" in combined or "주문해 보세요" in combined:
+            return "ad", "high", True, "Listening advertisement script from textbook activity."
         return "core_listening", "high", True, "Explicit listening script from textbook activity."
     if activity == "reading" and strong_source:
+        if "질문" in combined and "어때요" in combined:
+            return "qna_reading", "high", True, "Question-answer recommendation text from reading activity."
         if "카페" in combined or "블로그" in combined:
             return "blog", "high", True, "Reading passage in online post/blog-like format."
         if "광고" in combined:
@@ -157,7 +187,7 @@ def infer_candidate_type(record: dict[str, Any], text: str, title: str, strong_s
         if "기사" in combined:
             return "article", "high", True, "Reading passage in article format."
         return "core_reading", "high", True, "Explicit reading passage from textbook activity."
-    if has_dialogue_markers(text):
+    if has_dialogue_markers(text) or has_unlabeled_dialogue_shape(text):
         priority = "medium" if activity in {"speaking", "task"} else "high"
         return "reusable_dialogue", priority, True, "Complete dialogue reusable as an assessment passage."
     if activity == "culture":
@@ -174,6 +204,8 @@ def infer_candidate_type(record: dict[str, Any], text: str, title: str, strong_s
         return "blog", "medium", True, "Blog or cafe post-like text."
     if "가이드" in combined or "여행" in combined:
         return "guide", "medium", True, "Guide-like informational text."
+    if "질문" in combined and "어때요" in combined:
+        return "qna_reading", "medium", True, "Question-answer text reusable as a reading item passage."
     return "etc", "low", False, "Potential passage-like text but lower priority for exam use."
 
 
@@ -346,22 +378,29 @@ def make_inventory(
             "listening_passages": sum(1 for item in passages if item["skill"] == "listening"),
             "usable_exam_passages": sum(1 for item in passages if item.get("usable_for_exam") and item.get("priority") in {"high", "medium"}),
             "chapter_constraints": len(constraints),
-            "unit2_expected_passage_check": check_unit2_expected_passages(passages),
+            "unit2_expected_passage_check": check_expected_passages(passages, 2, UNIT2_EXPECTED_PASSAGES),
+            "unit5_expected_passage_check": check_expected_passages(passages, 5, UNIT5_EXPECTED_PASSAGES),
         },
         "units": units,
     }
 
 
-def check_unit2_expected_passages(passages: list[dict[str, Any]]) -> dict[str, Any]:
-    unit2 = [item for item in passages if item.get("unit_no") == 2]
+def check_expected_passages(passages: list[dict[str, Any]], unit_no: int, expected: dict[str, list[str]]) -> dict[str, Any]:
+    unit_passages = [item for item in passages if item.get("unit_no") == unit_no]
     results = {}
-    for label, needles in UNIT2_EXPECTED_PASSAGES.items():
+    for label, needles in expected.items():
         matches = [
-            item["id"]
-            for item in unit2
+            {
+                "id": item["id"],
+                "source_activity": item.get("source_activity"),
+                "candidate_type": item.get("candidate_type"),
+                "usable_for_exam": item.get("usable_for_exam"),
+                "priority": item.get("priority"),
+            }
+            for item in unit_passages
             if all(needle in item.get("passage", "") for needle in needles)
         ]
-        results[label] = {"found": bool(matches), "passage_ids": matches}
+        results[label] = {"found": bool(matches), "matches": matches, "passage_ids": [match["id"] for match in matches]}
     return {
         "passed": all(value["found"] for value in results.values()),
         "items": results,
@@ -412,25 +451,35 @@ def write_markdown(inventory: dict[str, Any], path: Path) -> None:
                 pages=page_range,
             )
         )
-    check = inventory["summary"].get("unit2_expected_passage_check", {})
-    if check:
+    for heading, check_key in [
+        ("Unit 2 Expected Passage Coverage", "unit2_expected_passage_check"),
+        ("Unit 5 Expected Passage Coverage", "unit5_expected_passage_check"),
+    ]:
+        check = inventory["summary"].get(check_key, {})
+        if not check:
+            continue
         lines.extend(
             [
                 "",
-                "## Unit 2 Expected Passage Coverage",
+                f"## {heading}",
                 "",
                 f"- passed: {check.get('passed')}",
                 "",
-                "| expected passage | found | passage_ids |",
-                "|---|---|---|",
+                "| expected passage | found | passage_ids | metadata |",
+                "|---|---|---|---|",
             ]
         )
         for label, result in check.get("items", {}).items():
+            metadata = "<br>".join(
+                "{id}: {source_activity}/{candidate_type}/usable={usable_for_exam}/priority={priority}".format(**match)
+                for match in result.get("matches", [])
+            )
             lines.append(
-                "| {label} | {found} | {ids} |".format(
+                "| {label} | {found} | {ids} | {metadata} |".format(
                     label=label.replace("|", "\\|"),
                     found=result.get("found"),
                     ids=", ".join(result.get("passage_ids", [])),
+                    metadata=metadata.replace("|", "\\|"),
                 )
             )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
