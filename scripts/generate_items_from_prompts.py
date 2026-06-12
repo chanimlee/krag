@@ -1,8 +1,8 @@
 """Generate Korean assessment items from prompt package JSONL files.
 
-This script intentionally implements only the OpenAI provider for now. The
-provider call is isolated so other providers can be added later without
-changing the prompt loading, parsing, validation, or export flow.
+Only the OpenAI provider is implemented. Provider calls are isolated so other
+providers can be added later without changing parsing, validation, or export.
+API keys are read only from environment variables and are never printed.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ from typing import Any
 
 DEFAULT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
 OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
+QUESTION_SCHEMA_PATH = Path("docs") / "question_type_schema.json"
 
 
 EXPECTED_OUTPUT_SCHEMA: dict[str, Any] = {
@@ -29,7 +30,10 @@ EXPECTED_OUTPUT_SCHEMA: dict[str, Any] = {
     "unit": "integer",
     "passage_id": "string",
     "skill": "reading | listening",
-    "item_type": "content_match | detail_info | main_idea | inference | blank_completion | other requested type",
+    "comprehension_type": "factual | inferential | evaluative",
+    "comprehension_type_label": "사실적 문항 | 추론적 문항 | 평가적 문항",
+    "stem_type": "string from docs/question_type_schema.json",
+    "stem_template": "string from the selected stem_type templates or close variant",
     "question": "string",
     "options": ["string", "string", "string", "string"],
     "answer": "integer from 1 to 4",
@@ -38,6 +42,8 @@ EXPECTED_OUTPUT_SCHEMA: dict[str, Any] = {
     "grammar_constraints_used": ["string"],
     "vocabulary_constraints_used": ["string"],
     "difficulty": "easy | medium | hard",
+    "difficulty_rationale": "string",
+    "teacher_edit_suggestions": ["string"],
     "generation_model": "string",
     "generated_at": "ISO-8601 timestamp",
 }
@@ -48,48 +54,20 @@ class GenerationError(Exception):
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Generate item JSONL/Markdown from prompt package JSONL."
-    )
+    parser = argparse.ArgumentParser(description="Generate item JSONL/Markdown from prompt package JSONL.")
     parser.add_argument("--input", required=True, help="Prompt package JSONL path.")
-    parser.add_argument(
-        "--output-dir",
-        default="reports/generated_item_samples",
-        help="Directory for generated item outputs.",
-    )
-    parser.add_argument(
-        "--model",
-        default=DEFAULT_MODEL,
-        help="OpenAI model name. Defaults to OPENAI_MODEL or gpt-4.1-mini.",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Read prompts and print/write an execution plan without API calls.",
-    )
-    parser.add_argument(
-        "--limit",
-        type=int,
-        default=None,
-        help="Process only the first n prompt packages.",
-    )
-    parser.add_argument(
-        "--temperature",
-        type=float,
-        default=0.2,
-        help="Generation temperature.",
-    )
-    parser.add_argument(
-        "--overwrite",
-        action="store_true",
-        help="Overwrite existing output files.",
-    )
-    parser.add_argument(
-        "--mock-response-text",
-        default=None,
-        help=argparse.SUPPRESS,
-    )
+    parser.add_argument("--output-dir", default="reports/generated_item_samples")
+    parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--temperature", type=float, default=0.2)
+    parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--mock-response-text", default=None, help=argparse.SUPPRESS)
     return parser.parse_args()
+
+
+def read_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -123,10 +101,14 @@ def ensure_can_write(paths: list[Path], overwrite: bool) -> None:
     existing = [str(path) for path in paths if path.exists()]
     if existing and not overwrite:
         joined = "\n".join(f"- {path}" for path in existing)
-        raise SystemExit(
-            "Output file(s) already exist. Use --overwrite to replace them:\n"
-            f"{joined}"
-        )
+        raise SystemExit(f"Output file(s) already exist. Use --overwrite to replace them:\n{joined}")
+
+
+def load_question_schema(path: Path = QUESTION_SCHEMA_PATH) -> dict[str, dict[str, Any]]:
+    schema = read_json(path)
+    if not isinstance(schema, list):
+        raise SystemExit("docs/question_type_schema.json must contain a list.")
+    return {str(record["stem_type"]): record for record in schema}
 
 
 def get_prompt_text(package: dict[str, Any]) -> str:
@@ -134,15 +116,6 @@ def get_prompt_text(package: dict[str, Any]) -> str:
     if not isinstance(prompt, str) or not prompt.strip():
         raise GenerationError("prompt field is missing or empty")
     return prompt.strip()
-
-
-def get_requested_item_types(package: dict[str, Any]) -> list[str]:
-    item_types = package.get("item_types", [])
-    if isinstance(item_types, str):
-        item_types = [part.strip() for part in item_types.split(",")]
-    if not isinstance(item_types, list):
-        return []
-    return [str(item_type).strip() for item_type in item_types if str(item_type).strip()]
 
 
 def get_item_count(package: dict[str, Any]) -> int:
@@ -153,19 +126,64 @@ def get_item_count(package: dict[str, Any]) -> int:
     return max(1, count)
 
 
+def get_question_requests(package: dict[str, Any]) -> list[dict[str, Any]]:
+    requests = package.get("question_requests")
+    if isinstance(requests, list):
+        return [request for request in requests if isinstance(request, dict)]
+
+    # Compatibility for prompt packages created before the schema migration.
+    old_types = package.get("item_types", [])
+    if isinstance(old_types, str):
+        old_types = [part.strip() for part in old_types.split(",")]
+    legacy_map = {
+        "content_match": ("factual", "사실적 문항", "내용 일치"),
+        "detail_info": ("factual", "사실적 문항", "세부 내용 파악"),
+        "sequence": ("factual", "사실적 문항", "순서 파악"),
+        "blank_completion": ("factual", "사실적 문항", "빈칸 내용 파악"),
+        "main_idea": ("inferential", "추론적 문항", "주제 파악"),
+        "inference": ("inferential", "추론적 문항", "내용 추론"),
+    }
+    converted = []
+    for old_type in old_types if isinstance(old_types, list) else []:
+        mapped = legacy_map.get(str(old_type))
+        if mapped:
+            comprehension_type, label, stem_type = mapped
+            converted.append(
+                {
+                    "comprehension_type": comprehension_type,
+                    "comprehension_type_label": label,
+                    "stem_type": stem_type,
+                    "stem_templates": [],
+                    "difficulty": "medium",
+                }
+            )
+    return converted
+
+
 def build_provider_prompt(package: dict[str, Any]) -> str:
-    requested_types = get_requested_item_types(package)
-    requested_types_text = ", ".join(requested_types) if requested_types else "(prompt package item_types)"
+    question_requests = get_question_requests(package)
+    request_summary = [
+        {
+            "comprehension_type": request.get("comprehension_type"),
+            "stem_type": request.get("stem_type"),
+            "stem_templates": request.get("stem_templates", []),
+            "difficulty": request.get("difficulty"),
+        }
+        for request in question_requests
+    ]
     item_count = get_item_count(package)
     schema = json.dumps(EXPECTED_OUTPUT_SCHEMA, ensure_ascii=False, indent=2)
     return (
         "You are generating Korean language assessment items for a teacher.\n"
         "Return ONLY valid JSON. Do not wrap the JSON in Markdown fences.\n"
         f"Return a JSON array with exactly {item_count} item object(s).\n"
-        f"Each item_type must be one of: {requested_types_text}.\n"
+        "Each item must follow one requested question type in order.\n"
         "Use the existing passage only. Do not create or modify the passage.\n"
         "Use options as a 4-element array and answer as an integer from 1 to 4.\n"
-        "Use rationale and evidence as non-empty strings.\n\n"
+        "Use rationale, evidence, difficulty_rationale as non-empty strings.\n"
+        "Use teacher_edit_suggestions as an array, even if empty.\n\n"
+        "Requested question types:\n"
+        f"{json.dumps(request_summary, ensure_ascii=False, indent=2)}\n\n"
         "Required output schema:\n"
         f"{schema}\n\n"
         "Prompt package:\n"
@@ -192,18 +210,11 @@ def call_openai_responses(prompt: str, model: str, temperature: float) -> str:
     if not api_key:
         raise GenerationError("OPENAI_API_KEY is not set")
 
-    payload = {
-        "model": model,
-        "input": prompt,
-        "temperature": temperature,
-    }
+    payload = {"model": model, "input": prompt, "temperature": temperature}
     request = urllib.request.Request(
         OPENAI_RESPONSES_URL,
         data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
         method="POST",
     )
     try:
@@ -236,14 +247,9 @@ def extract_response_text(response_json: dict[str, Any]) -> str:
             content = output_item.get("content", [])
             if isinstance(content, list):
                 for content_item in content:
-                    if not isinstance(content_item, dict):
-                        continue
-                    text = content_item.get("text")
-                    if isinstance(text, str):
-                        pieces.append(text)
-    if pieces:
-        return "\n".join(pieces)
-    return json.dumps(response_json, ensure_ascii=False)
+                    if isinstance(content_item, dict) and isinstance(content_item.get("text"), str):
+                        pieces.append(content_item["text"])
+    return "\n".join(pieces) if pieces else json.dumps(response_json, ensure_ascii=False)
 
 
 def parse_json_response(text: str) -> Any:
@@ -277,8 +283,7 @@ def normalize_options(options: Any) -> list[str]:
         for key in ["1", "2", "3", "4", 1, 2, 3, 4]:
             if key in options:
                 normalized.append(str(options[key]).strip())
-        if normalized:
-            return normalized
+        return normalized
     return []
 
 
@@ -335,17 +340,48 @@ def normalize_generated_payload(payload: Any) -> list[dict[str, Any]]:
     return normalized
 
 
+def request_for_index(package: dict[str, Any], item_index: int) -> dict[str, Any]:
+    requests = get_question_requests(package)
+    if not requests:
+        return {}
+    return requests[min(item_index - 1, len(requests) - 1)]
+
+
+def stem_template_allowed(stem_template: str, stem_type: str, schema_lookup: dict[str, dict[str, Any]]) -> bool:
+    if not stem_template:
+        return False
+    templates = schema_lookup.get(stem_type, {}).get("stem_templates", [])
+    if stem_template in templates:
+        return True
+    normalized = stem_template.replace(" ", "")
+    return any(template.replace(" ", "") in normalized or normalized in template.replace(" ", "") for template in templates)
+
+
 def enrich_and_validate_item(
     raw_item: dict[str, Any],
     package: dict[str, Any],
     item_index: int,
     model: str,
     generated_at: str,
+    schema_lookup: dict[str, dict[str, Any]],
 ) -> tuple[dict[str, Any], list[str]]:
-    requested_types = get_requested_item_types(package)
-    item_type = str(raw_item.get("item_type") or "").strip()
-    if not item_type and len(requested_types) == 1:
-        item_type = requested_types[0]
+    request = request_for_index(package, item_index)
+    stem_type = str(raw_item.get("stem_type") or request.get("stem_type") or "").strip()
+    schema_entry = schema_lookup.get(stem_type, {})
+    comprehension_type = str(
+        raw_item.get("comprehension_type")
+        or request.get("comprehension_type")
+        or schema_entry.get("comprehension_type")
+        or ""
+    ).strip()
+    label = str(
+        raw_item.get("comprehension_type_label")
+        or request.get("comprehension_type_label")
+        or schema_entry.get("comprehension_type_label")
+        or ""
+    ).strip()
+    templates = schema_entry.get("stem_templates", [])
+    stem_template = str(raw_item.get("stem_template") or (templates[0] if templates else "")).strip()
 
     prompt_id = str(package.get("prompt_id", "prompt")).strip()
     passage_id = str(package.get("passage_id", "")).strip()
@@ -357,35 +393,40 @@ def enrich_and_validate_item(
         "unit": package.get("unit"),
         "passage_id": passage_id,
         "skill": package.get("skill"),
-        "item_type": item_type,
-        "question": str(raw_item.get("question") or raw_item.get("stem") or "").strip(),
+        "comprehension_type": comprehension_type,
+        "comprehension_type_label": label,
+        "stem_type": stem_type,
+        "stem_template": stem_template,
+        "question": str(raw_item.get("question") or raw_item.get("stem") or stem_template).strip(),
         "options": normalize_options(raw_item.get("options")),
         "answer": normalize_answer(raw_item.get("answer")),
         "rationale": normalize_rationale(raw_item.get("rationale")),
         "evidence": str(raw_item.get("evidence") or "").strip(),
-        "grammar_constraints_used": normalize_list(
-            raw_item.get("grammar_constraints_used") or raw_item.get("used_grammar")
-        ),
-        "vocabulary_constraints_used": normalize_list(
-            raw_item.get("vocabulary_constraints_used") or raw_item.get("used_vocabulary")
-        ),
-        "difficulty": str(raw_item.get("difficulty") or "medium").strip(),
+        "grammar_constraints_used": normalize_list(raw_item.get("grammar_constraints_used") or raw_item.get("used_grammar")),
+        "vocabulary_constraints_used": normalize_list(raw_item.get("vocabulary_constraints_used") or raw_item.get("used_vocabulary")),
+        "difficulty": str(raw_item.get("difficulty") or request.get("difficulty") or "medium").strip(),
+        "difficulty_rationale": str(raw_item.get("difficulty_rationale") or "").strip(),
+        "teacher_edit_suggestions": normalize_list(raw_item.get("teacher_edit_suggestions")),
         "generation_model": model,
         "generated_at": generated_at,
     }
 
     errors: list[str] = []
+    if item["comprehension_type"] not in {"factual", "inferential", "evaluative"}:
+        errors.append("comprehension_type must be factual, inferential, or evaluative")
+    if item["stem_type"] not in schema_lookup:
+        errors.append("stem_type must exist in docs/question_type_schema.json")
+    if stem_type in schema_lookup and schema_lookup[stem_type]["comprehension_type"] != item["comprehension_type"]:
+        errors.append("comprehension_type must match the selected stem_type")
+    if stem_type in schema_lookup and not stem_template_allowed(item["stem_template"], stem_type, schema_lookup):
+        errors.append("stem_template must match or closely follow the selected stem_type templates")
     if item["answer"] not in {1, 2, 3, 4}:
         errors.append("answer must be an integer from 1 to 4")
     if len(item["options"]) != 4 or any(not option for option in item["options"]):
         errors.append("options must contain exactly four non-empty strings")
-    for field in ["question", "rationale", "evidence"]:
+    for field in ["question", "rationale", "evidence", "difficulty_rationale"]:
         if not item[field]:
             errors.append(f"{field} must not be empty")
-    if requested_types and item["item_type"] not in requested_types:
-        errors.append(
-            f"item_type must be one of requested item_types: {', '.join(requested_types)}"
-        )
     return item, errors
 
 
@@ -409,7 +450,10 @@ def format_markdown(items: list[dict[str, Any]], errors: list[dict[str, Any]]) -
                     f"- passage_id: `{item['passage_id']}`",
                     f"- unit: {item['unit']}",
                     f"- skill: {item['skill']}",
-                    f"- item_type: {item['item_type']}",
+                    f"- comprehension_type: {item['comprehension_type']} ({item['comprehension_type_label']})",
+                    f"- stem_type: {item['stem_type']}",
+                    f"- stem_template: {item['stem_template']}",
+                    f"- difficulty: {item['difficulty']}",
                     f"- answer: {item['answer']}",
                     "",
                     "### Question",
@@ -432,6 +476,10 @@ def format_markdown(items: list[dict[str, Any]], errors: list[dict[str, Any]]) -
                     "### Evidence",
                     "",
                     item["evidence"],
+                    "",
+                    "### Difficulty Rationale",
+                    "",
+                    item["difficulty_rationale"],
                     "",
                 ]
             )
@@ -467,7 +515,7 @@ def write_dry_run_plan(path: Path, packages: list[dict[str, Any]], model: str, t
                 "unit": package.get("unit"),
                 "passage_id": package.get("passage_id"),
                 "skill": package.get("skill"),
-                "item_types": get_requested_item_types(package),
+                "question_requests": get_question_requests(package),
                 "item_count": get_item_count(package),
                 "prompt_characters": len(get_prompt_text(package)),
             }
@@ -479,6 +527,7 @@ def write_dry_run_plan(path: Path, packages: list[dict[str, Any]], model: str, t
 
 def main() -> int:
     args = parse_args()
+    schema_lookup = load_question_schema()
     input_path = Path(args.input)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -526,9 +575,7 @@ def main() -> int:
             parsed = parse_json_response(raw_text)
             raw_items = normalize_generated_payload(parsed)
         except GenerationError as exc:
-            raw_path = None
-            if isinstance(raw_text, str):
-                raw_path = write_raw_response(raw_dir, prompt_id, raw_text)
+            raw_path = write_raw_response(raw_dir, prompt_id, raw_text) if isinstance(raw_text, str) else None
             errors.append(
                 {
                     "prompt_id": prompt_id,
@@ -550,6 +597,7 @@ def main() -> int:
                 item_index=item_index,
                 model=args.model,
                 generated_at=generated_at,
+                schema_lookup=schema_lookup,
             )
             if validation_errors:
                 errors.append(

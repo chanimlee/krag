@@ -121,19 +121,32 @@ By default, the blueprint uses passage candidates where `usable_for_exam=true` a
 
 ## Build Item Generation Prompt Packages
 
-Prompt packages combine a selected passage, unit grammar/vocabulary constraints, item types, and the expected output schema.
+Prompt packages combine a selected passage, unit grammar/vocabulary constraints, question type requests, and the expected output schema.
+
+The question type system is derived from `sample_question.md` and organized as:
+
+- `factual`: 사실적 문항
+- `inferential`: 추론적 문항
+- `evaluative`: 평가적 문항
+
+Schema files:
+
+- `docs/question_type_schema.json`
+- `docs/question_type_schema.md`
 
 Examples:
 
 ```powershell
-& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --item-types detail_info,detail_info,content_match --output-dir reports/item_generation_prompt_samples
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --question-plan reports/item_generation_prompt_samples/question_plan_u05_bulgogi_three_types.json --output-dir reports/item_generation_prompt_samples
 
-& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --item-types content_match,detail_info,main_idea,inference --output-dir reports/item_generation_prompt_samples
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --comprehension-type factual --stem-type "내용 일치" --output-dir reports/item_generation_prompt_samples
 ```
 
 Outputs are saved as JSONL and Markdown under:
 
 - `reports/item_generation_prompt_samples/`
+
+The old `--item-types` option is retained only as a compatibility shim for earlier prompt experiments. New work should use `--question-plan`, `--comprehension-type`, and `--stem-type`.
 
 ## Generate Item Drafts From Prompt Packages
 
@@ -159,6 +172,8 @@ Outputs:
 - `reports/generated_item_samples/generated_items_*.md`
 - `reports/generated_item_samples/generation_errors_*.jsonl`
 - `reports/generated_item_samples/raw_responses/` for raw responses that failed JSON parsing
+
+Generated item records now use `comprehension_type`, `comprehension_type_label`, `stem_type`, `stem_template`, `difficulty_rationale`, and `teacher_edit_suggestions` instead of the earlier temporary `item_type` field.
 
 ## Next Steps
 

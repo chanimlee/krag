@@ -1,0 +1,123 @@
+[
+  {
+    "comprehension_type": "factual",
+    "comprehension_type_label": "사실적 문항",
+    "stem_type": "내용 일치",
+    "stem_templates": [
+      "윗글의 내용과 같은 것을 고르십시오.",
+      "다음을 읽고 글의 내용과 같은 것을 고르십시오.",
+      "다음 글의 내용과 같은 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading", "listening"],
+    "suitable_passage_types": ["recipe", "guide", "article", "dialogue", "ad", "notice", "blog", "culture_text", "task_text", "qna_reading"],
+    "default_difficulty": "easy",
+    "notes": "지문에 명시된 세부 정보와 일치하는 선택지를 고르는 유형이다."
+  },
+  {
+    "comprehension_type": "factual",
+    "comprehension_type_label": "사실적 문항",
+    "stem_type": "세부 내용 파악",
+    "stem_templates": [
+      "무엇에 대한 내용인지 맞는 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading", "listening"],
+    "suitable_passage_types": ["recipe", "guide", "article", "dialogue", "ad", "notice", "blog", "culture_text", "task_text", "qna_reading"],
+    "default_difficulty": "easy",
+    "notes": "지문의 대상, 사건, 장소, 절차, 인물 관계 등 구체 정보를 확인한다."
+  },
+  {
+    "comprehension_type": "factual",
+    "comprehension_type_label": "사실적 문항",
+    "stem_type": "순서 파악",
+    "stem_templates": [
+      "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading"],
+    "suitable_passage_types": ["recipe", "guide", "article", "blog", "culture_text", "task_text"],
+    "default_difficulty": "hard",
+    "notes": "사건이나 절차의 흐름, 담화 연결 관계를 바탕으로 문장 위치를 판단한다."
+  },
+  {
+    "comprehension_type": "factual",
+    "comprehension_type_label": "사실적 문항",
+    "stem_type": "빈칸 내용 파악",
+    "stem_templates": [
+      "( )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "ㄱ에 들어갈 말로 가장 알맞은 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading", "listening"],
+    "suitable_passage_types": ["recipe", "guide", "article", "dialogue", "ad", "notice", "blog", "culture_text", "task_text", "qna_reading"],
+    "default_difficulty": "medium",
+    "notes": "지문 안의 전후 문맥에 근거해 빠진 말을 고르는 유형이다."
+  },
+  {
+    "comprehension_type": "inferential",
+    "comprehension_type_label": "추론적 문항",
+    "stem_type": "주제 파악",
+    "stem_templates": [
+      "다음을 읽고 글의 주제로 가장 알맞은 것을 고르십시오.",
+      "윗글의 주제로 가장 알맞은 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading", "listening"],
+    "suitable_passage_types": ["guide", "article", "dialogue", "ad", "notice", "blog", "culture_text", "task_text", "qna_reading"],
+    "default_difficulty": "medium",
+    "notes": "지문 전체의 중심 화제나 핵심 내용을 판단한다."
+  },
+  {
+    "comprehension_type": "inferential",
+    "comprehension_type_label": "추론적 문항",
+    "stem_type": "내용 추론",
+    "stem_templates": [
+      "윗글의 내용으로 알 수 있는 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading", "listening"],
+    "suitable_passage_types": ["recipe", "guide", "article", "dialogue", "ad", "notice", "blog", "culture_text", "task_text", "qna_reading"],
+    "default_difficulty": "medium",
+    "notes": "지문에 직접 쓰이지 않았지만 명시 정보들을 근거로 판단할 수 있는 내용을 묻는다."
+  },
+  {
+    "comprehension_type": "inferential",
+    "comprehension_type_label": "추론적 문항",
+    "stem_type": "이유/근거 추론",
+    "stem_templates": [
+      "왜 윗글을 썼는지 맞는 것을 고르십시오.",
+      "윗글을 쓴 목적으로 가장 알맞은 것을 고르십시오.",
+      "위 글을 쓴 목적으로 알맞은 것을 고르십시오.",
+      "필자가 이 글을 쓴 목적을 고르십시오."
+    ],
+    "allowed_skills": ["reading", "listening"],
+    "suitable_passage_types": ["guide", "article", "dialogue", "ad", "notice", "blog", "culture_text", "task_text", "qna_reading"],
+    "default_difficulty": "medium",
+    "notes": "글쓴이 또는 화자가 글/말을 한 목적, 이유, 근거를 추론한다."
+  },
+  {
+    "comprehension_type": "evaluative",
+    "comprehension_type_label": "평가적 문항",
+    "stem_type": "필자 태도 평가",
+    "stem_templates": [
+      "밑줄 친 부분에 나타난 필자의 태도로 알맞은 것을 고르십시오.",
+      "윗글에 나타난 필자의 태도로 가장 알맞은 것을 고르십시오.",
+      "밑줄 친 부분에서 나타난 필자의 태도로 알맞은 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading"],
+    "suitable_passage_types": ["article", "blog", "culture_text", "task_text", "guide"],
+    "default_difficulty": "hard",
+    "notes": "지문 표현과 맥락에 근거해 필자의 태도나 관점을 판단한다. 지문 밖 배경지식은 요구하지 않는다."
+  },
+  {
+    "comprehension_type": "evaluative",
+    "comprehension_type_label": "평가적 문항",
+    "stem_type": "심정/기분 평가",
+    "stem_templates": [
+      "밑줄 친 부분에 나타난 나의 심정으로 알맞은 것을 고르십시오.",
+      "밑줄 친 부분에 나타난 '나'의 심정으로 가장 알맞은 것을 고르십시오.",
+      "밑줄 부분에 나타난 '나'의 심정으로 알맞은 것을 고르십시오.",
+      "밑줄 친 부분에 나타난 나의 기분으로 알맞은 것을 고르십시오.",
+      "밑줄 친 부분에 나타난 '나'의 심정으로 알맞은 것을 고르십시오."
+    ],
+    "allowed_skills": ["reading", "listening"],
+    "suitable_passage_types": ["dialogue", "blog", "article", "task_text"],
+    "default_difficulty": "medium",
+    "notes": "인물의 감정이나 심정을 지문 안의 사건과 표현에 근거해 판단한다."
+  }
+]

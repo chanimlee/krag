@@ -5,9 +5,9 @@
   "prompt_package_count": 1,
   "packages": [
     {
-      "prompt_id": "prompt_passage_u05_reading_008_content_match_content_inference_author_attitude_3items",
+      "prompt_id": "prompt_passage_u05_reading_010_content_match_main_idea_author_attitude_3items",
       "unit": 5,
-      "passage_id": "passage_u05_reading_008",
+      "passage_id": "passage_u05_reading_010",
       "skill": "reading",
       "question_requests": [
         {
@@ -25,12 +25,13 @@
         {
           "comprehension_type": "inferential",
           "comprehension_type_label": "추론적 문항",
-          "stem_type": "내용 추론",
+          "stem_type": "주제 파악",
           "stem_templates": [
-            "윗글의 내용으로 알 수 있는 것을 고르십시오."
+            "다음을 읽고 글의 주제로 가장 알맞은 것을 고르십시오.",
+            "윗글의 주제로 가장 알맞은 것을 고르십시오."
           ],
           "difficulty": "medium",
-          "notes": "지문에 직접 쓰이지 않았지만 명시 정보들을 근거로 판단할 수 있는 내용을 묻는다."
+          "notes": "지문 전체의 중심 화제나 핵심 내용을 판단한다."
         },
         {
           "comprehension_type": "evaluative",
@@ -46,7 +47,7 @@
         }
       ],
       "item_count": 3,
-      "prompt_characters": 5699
+      "prompt_characters": 5810
     }
   ]
 }

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 """Build prompt packages for passage-grounded item generation.
 
-This script does not call an LLM API. It packages selected textbook passages,
-unit constraints, and item requests into JSONL and Markdown prompt files.
+Prompt packages now use the question type schema derived from
+sample_question.md/sample_question.jsonl instead of the temporary item_type
+labels used in earlier experiments. The old --item-types option is accepted
+only as a compatibility shim and is converted into question requests.
 """
 
 from __future__ import annotations
@@ -10,32 +12,60 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path.cwd()
 JSONL_DIR = ROOT / "rag_jsonl_output"
+DOCS_DIR = ROOT / "docs"
 DEFAULT_OUTPUT_DIR = ROOT / "reports" / "item_generation_prompt_samples"
+QUESTION_SCHEMA_PATH = DOCS_DIR / "question_type_schema.json"
 
 EXPECTED_OUTPUT_SCHEMA = {
     "passage_id": "string",
-    "unit_no": "integer",
+    "unit": "integer",
     "skill": "reading|listening",
-    "item_type": "string",
-    "stem": "string",
-    "options": {"1": "string", "2": "string", "3": "string", "4": "string"},
-    "answer": "1|2|3|4",
-    "rationale": {"1": "string", "2": "string", "3": "string", "4": "string"},
-    "used_grammar": ["string"],
-    "used_vocabulary": ["string"],
-    "constraint_check": {
-        "within_unit_grammar": "boolean",
-        "within_unit_vocabulary": "boolean",
-        "answer_grounded_in_passage": "boolean",
-    },
+    "comprehension_type": "factual|inferential|evaluative",
+    "comprehension_type_label": "사실적 문항|추론적 문항|평가적 문항",
+    "stem_type": "string from docs/question_type_schema.json",
+    "stem_template": "string from the selected stem_type templates or close variant",
+    "question": "string",
+    "options": ["string", "string", "string", "string"],
+    "answer": "integer 1-4",
+    "rationale": "string",
+    "evidence": "string grounded in the passage",
+    "grammar_constraints_used": ["string"],
+    "vocabulary_constraints_used": ["string"],
+    "difficulty": "easy|medium|hard",
+    "difficulty_rationale": "string",
+    "teacher_edit_suggestions": ["string"],
 }
+
+LEGACY_ITEM_TYPE_MAP = {
+    "content_match": {"comprehension_type": "factual", "stem_type": "내용 일치"},
+    "detail_info": {"comprehension_type": "factual", "stem_type": "세부 내용 파악"},
+    "sequence": {"comprehension_type": "factual", "stem_type": "순서 파악"},
+    "blank_completion": {"comprehension_type": "factual", "stem_type": "빈칸 내용 파악"},
+    "main_idea": {"comprehension_type": "inferential", "stem_type": "주제 파악"},
+    "inference": {"comprehension_type": "inferential", "stem_type": "내용 추론"},
+}
+
+STEM_TYPE_SLUGS = {
+    "내용 일치": "content_match",
+    "세부 내용 파악": "detail_info",
+    "순서 파악": "sequence",
+    "빈칸 내용 파악": "blank_completion",
+    "주제 파악": "main_idea",
+    "내용 추론": "content_inference",
+    "이유/근거 추론": "reason_inference",
+    "필자 태도 평가": "author_attitude",
+    "심정/기분 평가": "feeling_evaluation",
+}
+
+
+def read_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -50,43 +80,33 @@ def write_jsonl(records: list[dict[str, Any]], path: Path) -> None:
 
 
 def slug(text: str) -> str:
-    value = re.sub(r"[^0-9A-Za-z가-힣]+", "_", text).strip("_").lower()
+    if text in STEM_TYPE_SLUGS:
+        return STEM_TYPE_SLUGS[text]
+    value = re.sub(r"[^0-9A-Za-z가-힣_-]+", "_", text).strip("_").lower()
     return value or "prompt"
 
 
 def infer_passage_title(passage: dict[str, Any]) -> str:
-    text = passage.get("passage", "").strip()
+    text = str(passage.get("passage", "")).strip()
     first_sentence = re.split(r"(?<=[.!?。])\s+", text, maxsplit=1)[0]
     if len(first_sentence) > 80:
         first_sentence = first_sentence[:80].rstrip() + "..."
-    return first_sentence or passage.get("id", "")
-
-
-def parse_item_types(value: str) -> list[str]:
-    return [item.strip() for item in value.split(",") if item.strip()]
-
-
-def allocate_counts(total: int, item_types: list[str]) -> dict[str, int]:
-    if not item_types:
-        raise ValueError("--item-types must include at least one item type.")
-    if len(item_types) == total:
-        return dict(Counter(item_types))
-    unique_types = list(dict.fromkeys(item_types))
-    base = total // len(unique_types)
-    remainder = total % len(unique_types)
-    return {item_type: base + (1 if index < remainder else 0) for index, item_type in enumerate(unique_types)}
-
-
-def distribute_counts(total: int, passages: list[dict[str, Any]]) -> dict[str, int]:
-    if not passages:
-        return {}
-    base = total // len(passages)
-    remainder = total % len(passages)
-    return {passage["id"]: base + (1 if index < remainder else 0) for index, passage in enumerate(passages)}
+    return first_sentence or str(passage.get("id", ""))
 
 
 def load_constraints(path: Path) -> dict[int, dict[str, Any]]:
     return {record["unit_no"]: record for record in read_jsonl(path)}
+
+
+def load_question_schema(path: Path) -> list[dict[str, Any]]:
+    schema = read_json(path)
+    if not isinstance(schema, list):
+        raise ValueError("question_type_schema.json must contain a list.")
+    return schema
+
+
+def schema_by_stem_type(schema: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    return {record["stem_type"]: record for record in schema}
 
 
 def select_passages(args: argparse.Namespace, passages: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -111,11 +131,119 @@ def select_passages(args: argparse.Namespace, passages: list[dict[str, Any]]) ->
     return selected
 
 
+def distribute_counts(total: int, passages: list[dict[str, Any]]) -> dict[str, int]:
+    if not passages:
+        return {}
+    base = total // len(passages)
+    remainder = total % len(passages)
+    return {passage["id"]: base + (1 if index < remainder else 0) for index, passage in enumerate(passages)}
+
+
+def normalize_question_request(
+    request: dict[str, Any],
+    schema_lookup: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    comprehension_type = request.get("comprehension_type")
+    stem_type = request.get("stem_type") or request.get("question_type")
+    if not stem_type:
+        raise ValueError(f"Question request is missing stem_type: {request}")
+    if stem_type not in schema_lookup:
+        raise ValueError(f"Unknown stem_type in question plan: {stem_type}")
+    schema_entry = schema_lookup[stem_type]
+    if comprehension_type and comprehension_type != schema_entry["comprehension_type"]:
+        raise ValueError(
+            f"comprehension_type={comprehension_type} does not match stem_type={stem_type}"
+        )
+    return {
+        "comprehension_type": schema_entry["comprehension_type"],
+        "comprehension_type_label": schema_entry["comprehension_type_label"],
+        "stem_type": stem_type,
+        "stem_templates": schema_entry.get("stem_templates", []),
+        "difficulty": request.get("difficulty") or schema_entry.get("default_difficulty", "medium"),
+        "notes": request.get("notes") or schema_entry.get("notes", ""),
+    }
+
+
+def legacy_item_types_to_plan(item_types: str, schema_lookup: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    plan = []
+    for item_type in [part.strip() for part in item_types.split(",") if part.strip()]:
+        mapped = LEGACY_ITEM_TYPE_MAP.get(item_type)
+        if not mapped:
+            raise ValueError(f"Unsupported legacy item_type: {item_type}")
+        plan.append(normalize_question_request(mapped, schema_lookup))
+    return plan
+
+
+def load_question_plan(args: argparse.Namespace, schema_lookup: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    if args.question_plan:
+        plan_path = Path(args.question_plan)
+        raw_plan = read_json(plan_path)
+        if not isinstance(raw_plan, list):
+            raise ValueError("--question-plan must point to a JSON list.")
+        return [normalize_question_request(record, schema_lookup) for record in raw_plan]
+
+    if args.item_types:
+        return legacy_item_types_to_plan(args.item_types, schema_lookup)
+
+    stem_type = args.stem_type or args.question_type
+    if not stem_type:
+        if args.comprehension_type:
+            matches = [
+                entry
+                for entry in schema_lookup.values()
+                if entry["comprehension_type"] == args.comprehension_type
+            ]
+            if not matches:
+                raise ValueError(f"No schema entry for comprehension_type={args.comprehension_type}")
+            stem_type = matches[0]["stem_type"]
+        else:
+            stem_type = "내용 일치"
+
+    request = {
+        "comprehension_type": args.comprehension_type,
+        "stem_type": stem_type,
+        "difficulty": args.difficulty,
+    }
+    base_request = normalize_question_request(request, schema_lookup)
+    return [base_request for _ in range(args.item_count)]
+
+
+def expand_or_trim_plan(plan: list[dict[str, Any]], total: int) -> list[dict[str, Any]]:
+    if total <= 0:
+        raise ValueError("--item-count must be positive.")
+    if not plan:
+        raise ValueError("Question plan is empty.")
+    if len(plan) == total:
+        return plan
+    expanded = []
+    while len(expanded) < total:
+        expanded.extend(plan)
+    return expanded[:total]
+
+
+def split_plan_by_passage(
+    plan: list[dict[str, Any]],
+    passages: list[dict[str, Any]],
+    total: int,
+    passage_id: str | None,
+) -> dict[str, list[dict[str, Any]]]:
+    if passage_id:
+        return {passages[0]["id"]: expand_or_trim_plan(plan, total)}
+    counts = distribute_counts(total, passages)
+    cursor = 0
+    full_plan = expand_or_trim_plan(plan, total)
+    result: dict[str, list[dict[str, Any]]] = {}
+    for passage in passages:
+        count = counts.get(passage["id"], 0)
+        result[passage["id"]] = full_plan[cursor : cursor + count]
+        cursor += count
+    return result
+
+
 def build_prompt(
     passage: dict[str, Any],
     constraints: dict[str, Any],
-    item_type: str,
-    item_count: int,
+    question_requests: list[dict[str, Any]],
 ) -> str:
     title = infer_passage_title(passage)
     passage_payload = {
@@ -139,11 +267,14 @@ def build_prompt(
     return f"""You are an assistant for Korean language teachers.
 
 Task:
-- Generate {item_count} Korean proficiency assessment item(s) for the selected existing textbook passage.
-- Item type: {item_type}
+- Generate {len(question_requests)} Korean proficiency assessment item(s) for the selected existing textbook passage.
 - Generate only question stems and answer options.
 - Do not create a new passage.
 - Do not modify the selected passage.
+- Follow the question type system derived from sample_question.md.
+
+Question requests:
+{json.dumps(question_requests, ensure_ascii=False, indent=2)}
 
 Passage metadata and text:
 {json.dumps(passage_payload, ensure_ascii=False, indent=2)}
@@ -152,10 +283,15 @@ Unit grammar and vocabulary constraints:
 {json.dumps(constraint_payload, ensure_ascii=False, indent=2)}
 
 Constraints:
+- factual questions check information explicitly stated in the passage.
+- inferential questions ask what can be judged from passage evidence even when not directly stated.
+- evaluative questions judge appropriateness, validity, attitude, purpose, feeling, or stance, but must not require background knowledge outside the passage.
+- Use one of the listed stem_templates for each requested stem_type, or a very close variant.
 - The correct answer must be clearly grounded in the passage.
 - Distractors must be plausible but inconsistent with, unsupported by, or different from the passage.
 - Keep grammar and vocabulary within the unit constraints as much as possible.
 - Avoid excessive use of advanced grammar not taught in this unit.
+- evidence must be a non-empty passage-grounded string.
 - Return only valid JSON.
 
 Expected output JSON schema:
@@ -166,39 +302,38 @@ Expected output JSON schema:
 def build_packages(args: argparse.Namespace) -> list[dict[str, Any]]:
     passages = read_jsonl(JSONL_DIR / "passage_bank.jsonl")
     constraints_by_unit = load_constraints(JSONL_DIR / "chapter_constraints.jsonl")
-    item_types = parse_item_types(args.item_types)
+    question_schema = load_question_schema(QUESTION_SCHEMA_PATH)
+    schema_lookup = schema_by_stem_type(question_schema)
+    question_plan = load_question_plan(args, schema_lookup)
     selected = select_passages(args, passages)
-    passage_counts = {selected[0]["id"]: args.item_count} if args.passage_id else distribute_counts(args.item_count, selected)
+    plan_by_passage = split_plan_by_passage(question_plan, selected, args.item_count, args.passage_id)
 
     packages: list[dict[str, Any]] = []
     for passage in selected:
-        passage_item_count = passage_counts.get(passage["id"], 0)
-        if passage_item_count <= 0:
+        question_requests = plan_by_passage.get(passage["id"], [])
+        if not question_requests:
             continue
-        per_type_counts = allocate_counts(passage_item_count, item_types)
         constraints = constraints_by_unit.get(passage.get("unit_no"))
         if not constraints:
             raise ValueError(f"No chapter constraints found for unit {passage.get('unit_no')}")
-        for item_type, count in per_type_counts.items():
-            if count <= 0:
-                continue
-            prompt_id = f"prompt_{passage['id']}_{slug(item_type)}_{count}items"
-            packages.append(
-                {
-                    "prompt_id": prompt_id,
-                    "unit": passage.get("unit_no"),
-                    "passage_id": passage.get("id"),
-                    "skill": passage.get("skill"),
-                    "source_activity": passage.get("source_activity"),
-                    "candidate_type": passage.get("candidate_type"),
-                    "priority": passage.get("priority"),
-                    "passage_title": infer_passage_title(passage),
-                    "item_types": [item_type],
-                    "item_count": count,
-                    "prompt": build_prompt(passage, constraints, item_type, count),
-                    "expected_output_schema": EXPECTED_OUTPUT_SCHEMA,
-                }
-            )
+        request_slug = "_".join(slug(request["stem_type"]) for request in question_requests[:3])
+        prompt_id = f"prompt_{passage['id']}_{request_slug}_{len(question_requests)}items"
+        packages.append(
+            {
+                "prompt_id": prompt_id,
+                "unit": passage.get("unit_no"),
+                "passage_id": passage.get("id"),
+                "skill": passage.get("skill"),
+                "source_activity": passage.get("source_activity"),
+                "candidate_type": passage.get("candidate_type"),
+                "priority": passage.get("priority"),
+                "passage_title": infer_passage_title(passage),
+                "question_requests": question_requests,
+                "item_count": len(question_requests),
+                "prompt": build_prompt(passage, constraints, question_requests),
+                "expected_output_schema": EXPECTED_OUTPUT_SCHEMA,
+            }
+        )
     return packages
 
 
@@ -215,17 +350,17 @@ def write_markdown(packages: list[dict[str, Any]], path: Path) -> None:
                 f"- source_activity: {package['source_activity']}",
                 f"- candidate_type: {package['candidate_type']}",
                 f"- priority: {package['priority']}",
-                f"- item_types: {', '.join(package['item_types'])}",
                 f"- item_count: {package['item_count']}",
                 "",
-                "### Prompt",
-                "",
-                "```text",
-                package["prompt"].rstrip(),
-                "```",
+                "### Question Requests",
                 "",
             ]
         )
+        for index, request in enumerate(package["question_requests"], start=1):
+            lines.append(
+                f"{index}. {request['comprehension_type_label']} / {request['stem_type']} / {request['difficulty']}"
+            )
+        lines.extend(["", "### Prompt", "", "```text", package["prompt"].rstrip(), "```", ""])
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -243,7 +378,12 @@ def main() -> int:
     parser.add_argument("--unit", type=int)
     parser.add_argument("--skill", choices=["reading", "listening", "all"], default="all")
     parser.add_argument("--item-count", type=int, required=True)
-    parser.add_argument("--item-types", required=True, help="Comma-separated item types.")
+    parser.add_argument("--question-type", help="Alias for --stem-type.")
+    parser.add_argument("--comprehension-type", choices=["factual", "inferential", "evaluative"])
+    parser.add_argument("--stem-type")
+    parser.add_argument("--difficulty", choices=["easy", "medium", "hard"])
+    parser.add_argument("--question-plan", help="Path to a JSON question plan list.")
+    parser.add_argument("--item-types", help="Deprecated compatibility option for old item_type labels.")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     args = parser.parse_args()
 

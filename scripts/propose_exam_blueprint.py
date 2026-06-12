@@ -10,20 +10,20 @@ from pathlib import Path
 from typing import Any
 
 
-READING_TYPES = {
-    "content_match": 0.40,
-    "detail_info": 0.25,
-    "main_idea": 0.20,
-    "inference": 0.10,
-    "blank_completion": 0.05,
-}
+READING_QUESTION_TYPES = [
+    {"comprehension_type": "factual", "stem_type": "내용 일치", "stem_template": "윗글의 내용과 같은 것을 고르십시오.", "difficulty": "easy", "ratio": 0.35},
+    {"comprehension_type": "factual", "stem_type": "빈칸 내용 파악", "stem_template": "( )에 들어갈 말로 가장 알맞은 것을 고르십시오.", "difficulty": "medium", "ratio": 0.15},
+    {"comprehension_type": "inferential", "stem_type": "주제 파악", "stem_template": "다음을 읽고 글의 주제로 가장 알맞은 것을 고르십시오.", "difficulty": "medium", "ratio": 0.20},
+    {"comprehension_type": "inferential", "stem_type": "내용 추론", "stem_template": "윗글의 내용으로 알 수 있는 것을 고르십시오.", "difficulty": "medium", "ratio": 0.15},
+    {"comprehension_type": "evaluative", "stem_type": "필자 태도 평가", "stem_template": "밑줄 친 부분에 나타난 필자의 태도로 알맞은 것을 고르십시오.", "difficulty": "hard", "ratio": 0.15},
+]
 
-LISTENING_TYPES = {
-    "content_match": 0.45,
-    "detail_info": 0.30,
-    "main_idea": 0.15,
-    "inference": 0.10,
-}
+LISTENING_QUESTION_TYPES = [
+    {"comprehension_type": "factual", "stem_type": "내용 일치", "stem_template": "다음을 읽고 글의 내용과 같은 것을 고르십시오.", "difficulty": "easy", "ratio": 0.45},
+    {"comprehension_type": "factual", "stem_type": "세부 내용 파악", "stem_template": "무엇에 대한 내용인지 맞는 것을 고르십시오.", "difficulty": "easy", "ratio": 0.25},
+    {"comprehension_type": "inferential", "stem_type": "내용 추론", "stem_template": "윗글의 내용으로 알 수 있는 것을 고르십시오.", "difficulty": "medium", "ratio": 0.20},
+    {"comprehension_type": "evaluative", "stem_type": "심정/기분 평가", "stem_template": "밑줄 친 부분에 나타난 나의 심정으로 알맞은 것을 고르십시오.", "difficulty": "medium", "ratio": 0.10},
+]
 
 
 def parse_units(spec: str) -> list[int]:
@@ -84,18 +84,27 @@ def split_total(total: int, reading_ratio: float, listening_ratio: float, has_re
     return reading_total, listening_total
 
 
-def allocate_item_types(total: int, ratios: dict[str, float]) -> dict[str, int]:
+def allocate_question_types(total: int, question_types: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if total <= 0:
-        return {key: 0 for key in ratios}
-    allocation = {key: math.floor(total * value) for key, value in ratios.items()}
-    remaining = total - sum(allocation.values())
-    ranked = sorted(ratios, key=lambda key: (total * ratios[key]) - math.floor(total * ratios[key]), reverse=True)
-    for key in ranked:
+        return [{key: value for key, value in question_type.items() if key != "ratio"} | {"count": 0} for question_type in question_types]
+    allocation = [math.floor(total * question_type["ratio"]) for question_type in question_types]
+    remaining = total - sum(allocation)
+    ranked = sorted(
+        range(len(question_types)),
+        key=lambda index: (total * question_types[index]["ratio"]) - math.floor(total * question_types[index]["ratio"]),
+        reverse=True,
+    )
+    for index in ranked:
         if remaining <= 0:
             break
-        allocation[key] += 1
+        allocation[index] += 1
         remaining -= 1
-    return allocation
+    result = []
+    for question_type, count in zip(question_types, allocation):
+        entry = {key: value for key, value in question_type.items() if key != "ratio"}
+        entry["count"] = count
+        result.append(entry)
+    return result
 
 
 def propose(units_spec: str, total_items: int, reading_ratio: float, listening_ratio: float, inventory_path: Path) -> dict[str, Any]:
@@ -141,8 +150,8 @@ def propose(units_spec: str, total_items: int, reading_ratio: float, listening_r
         "listening_ratio": listening_ratio,
         "reading_items": sum(unit["reading_items"] for unit in unit_blueprints),
         "listening_items": sum(unit["listening_items"] for unit in unit_blueprints),
-        "reading_item_types": allocate_item_types(sum(unit["reading_items"] for unit in unit_blueprints), READING_TYPES),
-        "listening_item_types": allocate_item_types(sum(unit["listening_items"] for unit in unit_blueprints), LISTENING_TYPES),
+        "reading_question_types": allocate_question_types(sum(unit["reading_items"] for unit in unit_blueprints), READING_QUESTION_TYPES),
+        "listening_question_types": allocate_question_types(sum(unit["listening_items"] for unit in unit_blueprints), LISTENING_QUESTION_TYPES),
         "unit_blueprints": unit_blueprints,
     }
 

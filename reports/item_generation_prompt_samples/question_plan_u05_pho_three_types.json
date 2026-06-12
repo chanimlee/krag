@@ -1,0 +1,17 @@
+[
+  {
+    "comprehension_type": "factual",
+    "stem_type": "내용 일치",
+    "difficulty": "medium"
+  },
+  {
+    "comprehension_type": "inferential",
+    "stem_type": "주제 파악",
+    "difficulty": "medium"
+  },
+  {
+    "comprehension_type": "evaluative",
+    "stem_type": "필자 태도 평가",
+    "difficulty": "hard"
+  }
+]

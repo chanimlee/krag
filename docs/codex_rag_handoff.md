@@ -267,10 +267,35 @@ docs/item_generation_prompt_template.md
 
 Prompt package 생성 스크립트를 추가했다. 이 스크립트는 `passage_bank.jsonl`과 `chapter_constraints.jsonl`을 입력으로 사용해 특정 passage 또는 특정 unit의 문항 생성용 prompt를 JSONL/Markdown으로 저장한다. LLM API는 호출하지 않는다.
 
-```powershell
-& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --item-types detail_info,detail_info,content_match --output-dir reports/item_generation_prompt_samples
+문항 유형 체계는 `sample_question.md` / `sample_question.jsonl`의 발문 문구를 기준으로 재설계했다. 기존 `detail_info`, `content_match`, `main_idea`, `inference` 등의 임시 `item_type` 체계는 호환용으로만 남기고, 새 prompt package와 생성 결과는 다음 필드를 중심으로 사용한다.
 
-& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --item-types content_match,detail_info,main_idea,inference --output-dir reports/item_generation_prompt_samples
+```text
+comprehension_type
+comprehension_type_label
+stem_type
+stem_template
+difficulty
+```
+
+문항 유형 스키마:
+
+```text
+docs/question_type_schema.json
+docs/question_type_schema.md
+```
+
+대분류:
+
+```text
+factual = 사실적 문항
+inferential = 추론적 문항
+evaluative = 평가적 문항
+```
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --question-plan reports/item_generation_prompt_samples/question_plan_u05_bulgogi_three_types.json --output-dir reports/item_generation_prompt_samples
+
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --comprehension-type factual --stem-type "내용 일치" --output-dir reports/item_generation_prompt_samples
 ```
 
 샘플 출력 위치:
@@ -279,7 +304,7 @@ Prompt package 생성 스크립트를 추가했다. 이 스크립트는 `passage
 reports/item_generation_prompt_samples/
 ```
 
-생성된 prompt package는 passage metadata, passage text, 단원별 grammar/vocabulary constraints, item_type, item_count, expected output schema를 포함한다.
+생성된 prompt package는 passage metadata, passage text, 단원별 grammar/vocabulary constraints, question_requests, item_count, expected output schema를 포함한다.
 
 ## 14. OpenAI item generation script
 
@@ -325,9 +350,20 @@ reports/generated_item_samples/raw_responses/
 - answer는 1~4의 정수여야 한다.
 - options는 정확히 4개여야 한다.
 - question, rationale, evidence는 비어 있으면 안 된다.
-- item_type은 prompt package에서 요청한 item type 중 하나여야 한다.
+- comprehension_type은 factual/inferential/evaluative 중 하나여야 한다.
+- stem_type은 `docs/question_type_schema.json`에 있어야 한다.
+- stem_template은 해당 stem_type에 등록된 문구이거나 이에 준하는 변형이어야 한다.
 
 현재 컴퓨터 세션에서는 `OPENAI_API_KEY`가 설정되어 있지 않아 실제 OpenAI 호출은 실행하지 않았다. 대신 `--dry-run --limit 1`과 mock 비JSON 응답을 사용해 JSON 파싱 실패 시 raw response와 error record가 저장되는지 확인했다.
+
+새 question type 체계로 생성한 샘플 prompt package:
+
+```text
+reports/item_generation_prompt_samples/prompts_passage_u05_reading_008.jsonl
+reports/item_generation_prompt_samples/prompts_passage_u05_reading_010.jsonl
+```
+
+각 prompt package는 사실적 문항 1개, 추론적 문항 1개, 평가적 문항 1개 생성을 요청한다.
 
 ## 15. 다음 단계 제안
 
