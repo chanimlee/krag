@@ -119,6 +119,22 @@ Outputs:
 
 By default, the blueprint uses passage candidates where `usable_for_exam=true` and `priority` is `high` or `medium`.
 
+## Build Item Generation Prompt Packages
+
+This project does not call an LLM API at this stage. Prompt packages combine a selected passage, unit grammar/vocabulary constraints, item types, and the expected output schema.
+
+Examples:
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --item-types detail_info,detail_info,content_match --output-dir reports/item_generation_prompt_samples
+
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --item-types content_match,detail_info,main_idea,inference --output-dir reports/item_generation_prompt_samples
+```
+
+Outputs are saved as JSONL and Markdown under:
+
+- `reports/item_generation_prompt_samples/`
+
 ## Next Steps
 
 - Human review of `reports/retrieval_review_sheet.tsv` or `.csv`.

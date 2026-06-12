@@ -265,6 +265,22 @@ chapter_constraints records: 9
 docs/item_generation_prompt_template.md
 ```
 
+Prompt package 생성 스크립트를 추가했다. 이 스크립트는 `passage_bank.jsonl`과 `chapter_constraints.jsonl`을 입력으로 사용해 특정 passage 또는 특정 unit의 문항 생성용 prompt를 JSONL/Markdown으로 저장한다. LLM API는 호출하지 않는다.
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --item-types detail_info,detail_info,content_match --output-dir reports/item_generation_prompt_samples
+
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --item-types content_match,detail_info,main_idea,inference --output-dir reports/item_generation_prompt_samples
+```
+
+샘플 출력 위치:
+
+```text
+reports/item_generation_prompt_samples/
+```
+
+생성된 prompt package는 passage metadata, passage text, 단원별 grammar/vocabulary constraints, item_type, item_count, expected output schema를 포함한다.
+
 ## 14. 다음 단계 제안
 
 현재 목표에 맞춘 다음 단계 후보는 아래와 같다.
