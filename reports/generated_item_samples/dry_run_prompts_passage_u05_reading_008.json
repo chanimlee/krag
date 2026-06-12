@@ -1,0 +1,19 @@
+{
+  "mode": "dry_run",
+  "model": "gpt-4.1-mini",
+  "temperature": 0.2,
+  "prompt_package_count": 1,
+  "packages": [
+    {
+      "prompt_id": "prompt_passage_u05_reading_008_detail_info_2items",
+      "unit": 5,
+      "passage_id": "passage_u05_reading_008",
+      "skill": "reading",
+      "item_types": [
+        "detail_info"
+      ],
+      "item_count": 2,
+      "prompt_characters": 3999
+    }
+  ]
+}

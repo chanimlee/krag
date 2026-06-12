@@ -121,7 +121,7 @@ By default, the blueprint uses passage candidates where `usable_for_exam=true` a
 
 ## Build Item Generation Prompt Packages
 
-This project does not call an LLM API at this stage. Prompt packages combine a selected passage, unit grammar/vocabulary constraints, item types, and the expected output schema.
+Prompt packages combine a selected passage, unit grammar/vocabulary constraints, item types, and the expected output schema.
 
 Examples:
 
@@ -135,8 +135,33 @@ Outputs are saved as JSONL and Markdown under:
 
 - `reports/item_generation_prompt_samples/`
 
+## Generate Item Drafts From Prompt Packages
+
+OpenAI is the only implemented provider in the current script. The code is structured so additional providers can be added later, but Anthropic is not implemented in this commit.
+
+The API key must be provided through the `OPENAI_API_KEY` environment variable. Do not put API keys in code, documents, sample files, or logs.
+
+Check the run plan before making an API call:
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\generate_items_from_prompts.py --input reports/item_generation_prompt_samples/prompts_passage_u05_reading_008.jsonl --output-dir reports/generated_item_samples --dry-run --limit 1 --overwrite
+```
+
+Generate a small sample:
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\generate_items_from_prompts.py --input reports/item_generation_prompt_samples/prompts_passage_u05_reading_008.jsonl --output-dir reports/generated_item_samples --limit 1 --overwrite
+```
+
+Outputs:
+
+- `reports/generated_item_samples/generated_items_*.jsonl`
+- `reports/generated_item_samples/generated_items_*.md`
+- `reports/generated_item_samples/generation_errors_*.jsonl`
+- `reports/generated_item_samples/raw_responses/` for raw responses that failed JSON parsing
+
 ## Next Steps
 
 - Human review of `reports/retrieval_review_sheet.tsv` or `.csv`.
-- Implement a selected-passage-based item draft pipeline.
+- Run small OpenAI item generation samples after setting `OPENAI_API_KEY`.
 - Design generated item validation scripts.

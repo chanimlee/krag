@@ -259,7 +259,7 @@ chapter_constraints records: 9
 
 시험 구성안은 기본적으로 `usable_for_exam=true`이고 `priority`가 `high` 또는 `medium`인 지문 후보를 대상으로 문항 수를 배분한다.
 
-문항 생성 프롬프트 설계 초안은 다음 문서에 있다. 아직 LLM API 호출은 구현하지 않았다.
+문항 생성 프롬프트 설계 초안은 다음 문서에 있다.
 
 ```text
 docs/item_generation_prompt_template.md
@@ -281,13 +281,61 @@ reports/item_generation_prompt_samples/
 
 생성된 prompt package는 passage metadata, passage text, 단원별 grammar/vocabulary constraints, item_type, item_count, expected output schema를 포함한다.
 
-## 14. 다음 단계 제안
+## 14. OpenAI item generation script
+
+Prompt package JSONL을 입력으로 받아 문항 초안을 생성하는 스크립트를 추가했다.
+
+```text
+scripts/generate_items_from_prompts.py
+```
+
+현재 구현 provider는 OpenAI뿐이다. Anthropic provider는 이번 커밋에서 구현하지 않았고, 이후 확장을 위해 provider 호출 함수만 분리했다.
+
+API 키는 반드시 환경변수에서만 읽는다.
+
+```text
+OPENAI_API_KEY
+```
+
+API 키는 코드, README, 샘플 파일, 로그에 출력하거나 저장하지 않는다.
+
+실제 API 호출 전 점검 명령:
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\generate_items_from_prompts.py --input reports/item_generation_prompt_samples/prompts_passage_u05_reading_008.jsonl --output-dir reports/generated_item_samples --dry-run --limit 1 --overwrite
+```
+
+샘플 생성 명령:
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\generate_items_from_prompts.py --input reports/item_generation_prompt_samples/prompts_passage_u05_reading_008.jsonl --output-dir reports/generated_item_samples --limit 1 --overwrite
+```
+
+출력 위치:
+
+```text
+reports/generated_item_samples/generated_items_*.jsonl
+reports/generated_item_samples/generated_items_*.md
+reports/generated_item_samples/generation_errors_*.jsonl
+reports/generated_item_samples/raw_responses/
+```
+
+검증 규칙:
+
+- answer는 1~4의 정수여야 한다.
+- options는 정확히 4개여야 한다.
+- question, rationale, evidence는 비어 있으면 안 된다.
+- item_type은 prompt package에서 요청한 item type 중 하나여야 한다.
+
+현재 컴퓨터 세션에서는 `OPENAI_API_KEY`가 설정되어 있지 않아 실제 OpenAI 호출은 실행하지 않았다. 대신 `--dry-run --limit 1`과 mock 비JSON 응답을 사용해 JSON 파싱 실패 시 raw response와 error record가 저장되는지 확인했다.
+
+## 15. 다음 단계 제안
 
 현재 목표에 맞춘 다음 단계 후보는 아래와 같다.
 
 - 사용자가 단원과 총 문항 수를 지정하는 설정 파일 설계
 - `passage_bank.jsonl`에서 사용할 기존 읽기/듣기 지문을 선택하는 스크립트 구현
-- 선택 지문 기반 문항 생성 draft pipeline 구현
+- `OPENAI_API_KEY` 설정 후 소량 prompt package로 실제 문항 생성 샘플 실행
 - 생성 문항 검증 스크립트 설계
 - 교사용 출력 형식 설계
 - 이후 필요 시 semantic retriever 추가 여부 결정
