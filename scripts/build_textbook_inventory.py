@@ -14,6 +14,17 @@ ROOT = Path.cwd()
 JSONL_DIR = ROOT / "rag_jsonl_output"
 REPORTS_DIR = ROOT / "reports"
 
+UNIT2_EXPECTED_PASSAGES = {
+    "딸기 축제 대화": ["딸기 축제", "겉옷"],
+    "태풍 ‘나비’ 일기예보": ["태풍 '나비'", "일기 예보"],
+    "발리 여행 계획 대화": ["발리", "요가", "비행기표"],
+    "발리에서 제주도로 여행 계획을 변경하는 대화": ["발리에 못 가게", "제주도", "고기국수"],
+    "여행사랑 카페 요청 글": ["여행사랑 카페", "추천해 주세요"],
+    "오로라 투어 안내문": ["오로라투어", "옐로나이프"],
+    "수원 1박 2일 여행 안내 글": ["1박2일 수원 여행", "화성"],
+    "꽃샘추위 설명문": ["꽃샘추위", "일교차"],
+}
+
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
@@ -86,26 +97,121 @@ def is_listening_record(record: dict[str, Any]) -> bool:
     return record.get("activity_area") == "듣기" or record.get("object_type") == "listening"
 
 
+def source_activity(record: dict[str, Any]) -> str:
+    object_type = record.get("object_type")
+    mapping = {
+        "reading": "reading",
+        "listening": "listening",
+        "speaking": "speaking",
+        "culture": "culture",
+        "task": "task",
+    }
+    return mapping.get(object_type, "other")
+
+
+def has_dialogue_markers(text: str) -> bool:
+    return len(re.findall(r"(?:^|\s)[가-힣A-Za-z]{1,8}:", text)) >= 2 or ("남:" in text and "여:" in text)
+
+
+def sentence_like_count(text: str) -> int:
+    return len(re.findall(r"(?:다|요|까|죠|지|네|습니다|습니까|세요)[.!?]?(?:\s|$)", text))
+
+
+def looks_like_list_only(text: str) -> bool:
+    if len(text) < 45:
+        return True
+    option_hits = len(re.findall(r"(?:^|\s)[1-4][).]\s", text))
+    if option_hits >= 2:
+        return True
+    slash_count = text.count("/")
+    if slash_count >= 4 and sentence_like_count(text) < 2 and not has_dialogue_markers(text):
+        return True
+    english_words = len(re.findall(r"[A-Za-z]{2,}", text))
+    korean_chars = len(re.findall(r"[가-힣]", text))
+    if english_words >= 5 and korean_chars < 25:
+        return True
+    return False
+
+
+def usable_text_candidate(text: str, strong_source: bool) -> bool:
+    text = clean_text(text)
+    if not text or looks_like_list_only(text):
+        return False
+    if strong_source:
+        return len(text) >= 45
+    return has_dialogue_markers(text) or sentence_like_count(text) >= 2
+
+
+def infer_candidate_type(record: dict[str, Any], text: str, title: str, strong_source: bool) -> tuple[str, str, bool, str]:
+    activity = source_activity(record)
+    combined = f"{title} {text}"
+    if activity == "listening" and (strong_source or title == "듣기 지문"):
+        return "core_listening", "high", True, "Explicit listening script from textbook activity."
+    if activity == "reading" and strong_source:
+        if "카페" in combined or "블로그" in combined:
+            return "blog", "high", True, "Reading passage in online post/blog-like format."
+        if "광고" in combined:
+            return "ad", "high", True, "Reading passage in advertisement format."
+        if "안내" in combined or "투어" in combined or "여행" in combined:
+            return "guide", "high", True, "Reading passage in guide/notice format."
+        if "기사" in combined:
+            return "article", "high", True, "Reading passage in article format."
+        return "core_reading", "high", True, "Explicit reading passage from textbook activity."
+    if has_dialogue_markers(text):
+        priority = "medium" if activity in {"speaking", "task"} else "high"
+        return "reusable_dialogue", priority, True, "Complete dialogue reusable as an assessment passage."
+    if activity == "culture":
+        return "culture_text", "medium", True, "Culture page explanatory text reusable as an assessment passage."
+    if activity == "task":
+        return "task_text", "medium", True, "Task page text reusable as a short assessment passage."
+    if "안내" in combined:
+        return "notice", "medium", True, "Notice-like explanatory text."
+    if "광고" in combined:
+        return "ad", "medium", True, "Advertisement-like text."
+    if "기사" in combined:
+        return "article", "medium", True, "Article-like text."
+    if "블로그" in combined or "카페" in combined:
+        return "blog", "medium", True, "Blog or cafe post-like text."
+    if "가이드" in combined or "여행" in combined:
+        return "guide", "medium", True, "Guide-like informational text."
+    return "etc", "low", False, "Potential passage-like text but lower priority for exam use."
+
+
+def iter_text_candidates(record: dict[str, Any]) -> list[dict[str, str]]:
+    candidates: list[dict[str, str]] = []
+    for section in record.get("raw_sections") or []:
+        title = clean_text(section.get("title"))
+        text = clean_text(section.get("text"))
+        if not text:
+            continue
+        strong = title in {"지문", "듣기 지문"}
+        if title in {"질문", "어휘", "문법과 표현", "문법 항목", "문법 형식", "발음", "자기평가", "표"}:
+            continue
+        if title == "내용" and record.get("object_type") in {"vocabulary", "unit_intro"}:
+            continue
+        if usable_text_candidate(text, strong):
+            candidates.append({"title": title, "text": text, "strong": str(strong)})
+    return candidates
+
+
 def build_passage_bank(textbook_records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     counters: dict[tuple[int, str], int] = defaultdict(int)
     passages: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
 
     for record in textbook_records:
-        candidates: list[tuple[str, str]] = []
-        if is_reading_record(record):
-            candidates.extend(("reading", text) for text in flatten(record.get("passages")))
-        if is_listening_record(record):
-            candidates.extend(("listening", text) for text in flatten(record.get("listening_scripts")))
-
-        for skill, passage in candidates:
-            passage = clean_text(passage)
-            if not passage:
+        for candidate in iter_text_candidates(record):
+            passage = clean_text(candidate["text"])
+            strong = candidate["strong"] == "True"
+            dedupe_key = (record.get("id") or "", passage)
+            if not passage or dedupe_key in seen:
                 continue
+            seen.add(dedupe_key)
+            activity = source_activity(record)
+            skill = "listening" if activity == "listening" else "reading"
+            candidate_type, priority, usable_for_exam, reason = infer_candidate_type(record, passage, candidate["title"], strong)
             unit_no = int(record.get("unit_no") or 0)
             counters[(unit_no, skill)] += 1
-            note = ""
-            if "\n\n" in passage or len(flatten(record.get("passages" if skill == "reading" else "listening_scripts"))) > 1:
-                note = "Multiple source passages may have been split from one textbook record."
             passages.append(
                 {
                     "id": f"passage_u{unit_no:02d}_{skill}_{counters[(unit_no, skill)]:03d}",
@@ -116,13 +222,18 @@ def build_passage_bank(textbook_records: list[dict[str, Any]]) -> list[dict[str,
                     "skill": skill,
                     "page": record.get("page"),
                     "activity_area": record.get("activity_area"),
+                    "source_activity": activity,
+                    "candidate_type": candidate_type,
+                    "usable_for_exam": usable_for_exam,
+                    "priority": priority,
+                    "extraction_reason": reason,
                     "passage_type": "existing_textbook_passage",
                     "passage": passage,
                     "source_record_id": record.get("id"),
                     "available_question_prompts": flatten(record.get("questions")),
                     "linked_grammar_items": flatten(record.get("grammar_items")) + flatten(record.get("grammar_expressions")) + flatten(record.get("grammar_forms")),
                     "linked_vocabulary": flatten(record.get("vocabulary")),
-                    "note": note,
+                    "note": "" if strong else f"Extracted from raw section title: {candidate['title']}",
                 }
             )
     return passages
@@ -193,8 +304,13 @@ def make_inventory(
     constraints: list[dict[str, Any]],
 ) -> dict[str, Any]:
     passage_counts: dict[int, dict[str, int]] = defaultdict(lambda: {"reading": 0, "listening": 0})
+    usable_counts: dict[int, dict[str, int]] = defaultdict(lambda: {"reading": 0, "listening": 0})
+    candidate_type_counts: dict[int, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for passage in passages:
         passage_counts[int(passage["unit_no"])][passage["skill"]] += 1
+        candidate_type_counts[int(passage["unit_no"])][passage["candidate_type"]] += 1
+        if passage.get("usable_for_exam") and passage.get("priority") in {"high", "medium"}:
+            usable_counts[int(passage["unit_no"])][passage["skill"]] += 1
 
     units = []
     for constraint in constraints:
@@ -206,6 +322,9 @@ def make_inventory(
                 "unit_title": constraint.get("unit_title"),
                 "reading_passage_count": passage_counts[unit_no]["reading"],
                 "listening_passage_count": passage_counts[unit_no]["listening"],
+                "usable_reading_passage_count": usable_counts[unit_no]["reading"],
+                "usable_listening_passage_count": usable_counts[unit_no]["listening"],
+                "candidate_type_counts": dict(sorted(candidate_type_counts[unit_no].items())),
                 "grammar_item_count": len(constraint["grammar_items"]),
                 "vocabulary_count": len(constraint["vocabulary"]),
                 "sample_grammar_items": constraint["grammar_items"][:8],
@@ -225,9 +344,27 @@ def make_inventory(
             "passage_bank_records": len(passages),
             "reading_passages": sum(1 for item in passages if item["skill"] == "reading"),
             "listening_passages": sum(1 for item in passages if item["skill"] == "listening"),
+            "usable_exam_passages": sum(1 for item in passages if item.get("usable_for_exam") and item.get("priority") in {"high", "medium"}),
             "chapter_constraints": len(constraints),
+            "unit2_expected_passage_check": check_unit2_expected_passages(passages),
         },
         "units": units,
+    }
+
+
+def check_unit2_expected_passages(passages: list[dict[str, Any]]) -> dict[str, Any]:
+    unit2 = [item for item in passages if item.get("unit_no") == 2]
+    results = {}
+    for label, needles in UNIT2_EXPECTED_PASSAGES.items():
+        matches = [
+            item["id"]
+            for item in unit2
+            if all(needle in item.get("passage", "") for needle in needles)
+        ]
+        results[label] = {"found": bool(matches), "passage_ids": matches}
+    return {
+        "passed": all(value["found"] for value in results.values()),
+        "items": results,
     }
 
 
@@ -241,14 +378,16 @@ def write_markdown(inventory: dict[str, Any], path: Path) -> None:
         "",
     ]
     for key, value in inventory["summary"].items():
+        if isinstance(value, (dict, list)):
+            continue
         lines.append(f"- {key}: {value}")
     lines.extend(
         [
             "",
             "## Unit Overview",
             "",
-            "| unit_no | unit_title | reading passages | listening passages | grammar items | vocabulary | main grammar items | sample vocabulary | page range |",
-            "|---:|---|---:|---:|---:|---:|---|---|---|",
+            "| unit_no | unit_title | reading passages | listening passages | usable reading | usable listening | candidate types | grammar items | vocabulary | main grammar items | sample vocabulary | page range |",
+            "|---:|---|---:|---:|---:|---:|---|---:|---:|---|---|---|",
         ]
     )
     for unit in inventory["units"]:
@@ -256,12 +395,16 @@ def write_markdown(inventory: dict[str, Any], path: Path) -> None:
         page_range = f"{pages[0]}-{pages[1]}" if pages else ""
         grammar = "<br>".join(unit["sample_grammar_items"])
         vocab = "<br>".join(unit["sample_vocabulary"])
+        candidate_types = "<br>".join(f"{key}:{value}" for key, value in unit["candidate_type_counts"].items())
         lines.append(
-            "| {unit_no} | {unit_title} | {reading} | {listening} | {grammar_count} | {vocab_count} | {grammar} | {vocab} | {pages} |".format(
+            "| {unit_no} | {unit_title} | {reading} | {listening} | {usable_reading} | {usable_listening} | {candidate_types} | {grammar_count} | {vocab_count} | {grammar} | {vocab} | {pages} |".format(
                 unit_no=unit["unit_no"],
                 unit_title=unit.get("unit_title") or "",
                 reading=unit["reading_passage_count"],
                 listening=unit["listening_passage_count"],
+                usable_reading=unit["usable_reading_passage_count"],
+                usable_listening=unit["usable_listening_passage_count"],
+                candidate_types=candidate_types.replace("|", "\\|"),
                 grammar_count=unit["grammar_item_count"],
                 vocab_count=unit["vocabulary_count"],
                 grammar=grammar.replace("|", "\\|"),
@@ -269,6 +412,27 @@ def write_markdown(inventory: dict[str, Any], path: Path) -> None:
                 pages=page_range,
             )
         )
+    check = inventory["summary"].get("unit2_expected_passage_check", {})
+    if check:
+        lines.extend(
+            [
+                "",
+                "## Unit 2 Expected Passage Coverage",
+                "",
+                f"- passed: {check.get('passed')}",
+                "",
+                "| expected passage | found | passage_ids |",
+                "|---|---|---|",
+            ]
+        )
+        for label, result in check.get("items", {}).items():
+            lines.append(
+                "| {label} | {found} | {ids} |".format(
+                    label=label.replace("|", "\\|"),
+                    found=result.get("found"),
+                    ids=", ".join(result.get("passage_ids", [])),
+                )
+            )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 

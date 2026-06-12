@@ -105,12 +105,16 @@ def propose(units_spec: str, total_items: int, reading_ratio: float, listening_r
     if not units:
         raise ValueError(f"No units matched: {units_spec}")
 
-    has_reading = any(unit["reading_passage_count"] > 0 for unit in units)
-    has_listening = any(unit["listening_passage_count"] > 0 for unit in units)
+    for unit in units:
+        unit["blueprint_reading_count"] = unit.get("usable_reading_passage_count", unit["reading_passage_count"])
+        unit["blueprint_listening_count"] = unit.get("usable_listening_passage_count", unit["listening_passage_count"])
+
+    has_reading = any(unit["blueprint_reading_count"] > 0 for unit in units)
+    has_listening = any(unit["blueprint_listening_count"] > 0 for unit in units)
     reading_total, listening_total = split_total(total_items, reading_ratio, listening_ratio, has_reading, has_listening)
 
-    reading_alloc = allocate_by_weight(reading_total, units, "reading_passage_count", minimum_one=reading_total >= len([u for u in units if u["reading_passage_count"] > 0]))
-    listening_alloc = allocate_by_weight(listening_total, units, "listening_passage_count", minimum_one=listening_total >= len([u for u in units if u["listening_passage_count"] > 0]))
+    reading_alloc = allocate_by_weight(reading_total, units, "blueprint_reading_count", minimum_one=reading_total >= len([u for u in units if u["blueprint_reading_count"] > 0]))
+    listening_alloc = allocate_by_weight(listening_total, units, "blueprint_listening_count", minimum_one=listening_total >= len([u for u in units if u["blueprint_listening_count"] > 0]))
 
     unit_blueprints = []
     for unit in units:
@@ -122,6 +126,8 @@ def propose(units_spec: str, total_items: int, reading_ratio: float, listening_r
                 "unit_title": unit.get("unit_title"),
                 "reading_passage_count": unit["reading_passage_count"],
                 "listening_passage_count": unit["listening_passage_count"],
+                "usable_reading_passage_count": unit["blueprint_reading_count"],
+                "usable_listening_passage_count": unit["blueprint_listening_count"],
                 "reading_items": reading_items,
                 "listening_items": listening_items,
                 "total_items": reading_items + listening_items,

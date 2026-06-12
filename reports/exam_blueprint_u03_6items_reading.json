@@ -24,8 +24,10 @@
     {
       "unit_no": 3,
       "unit_title": "인터넷 콘텐츠",
-      "reading_passage_count": 3,
-      "listening_passage_count": 3,
+      "reading_passage_count": 17,
+      "listening_passage_count": 8,
+      "usable_reading_passage_count": 10,
+      "usable_listening_passage_count": 4,
       "reading_items": 6,
       "listening_items": 0,
       "total_items": 6

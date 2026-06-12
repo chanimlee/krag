@@ -6,17 +6,83 @@
   },
   "summary": {
     "textbook_records": 144,
-    "passage_bank_records": 50,
-    "reading_passages": 23,
-    "listening_passages": 27,
-    "chapter_constraints": 9
+    "passage_bank_records": 214,
+    "reading_passages": 145,
+    "listening_passages": 69,
+    "usable_exam_passages": 128,
+    "chapter_constraints": 9,
+    "unit2_expected_passage_check": {
+      "passed": true,
+      "items": {
+        "딸기 축제 대화": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_reading_003"
+          ]
+        },
+        "태풍 ‘나비’ 일기예보": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_listening_002"
+          ]
+        },
+        "발리 여행 계획 대화": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_listening_003",
+            "passage_u02_listening_005"
+          ]
+        },
+        "발리에서 제주도로 여행 계획을 변경하는 대화": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_listening_006"
+          ]
+        },
+        "여행사랑 카페 요청 글": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_reading_006"
+          ]
+        },
+        "오로라 투어 안내문": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_reading_007"
+          ]
+        },
+        "수원 1박 2일 여행 안내 글": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_reading_009"
+          ]
+        },
+        "꽃샘추위 설명문": {
+          "found": true,
+          "passage_ids": [
+            "passage_u02_reading_017"
+          ]
+        }
+      }
+    }
   },
   "units": [
     {
       "unit_no": 1,
       "unit_title": "새로운 출발",
-      "reading_passage_count": 4,
-      "listening_passage_count": 3,
+      "reading_passage_count": 15,
+      "listening_passage_count": 8,
+      "usable_reading_passage_count": 9,
+      "usable_listening_passage_count": 4,
+      "candidate_type_counts": {
+        "core_listening": 3,
+        "core_reading": 3,
+        "culture_text": 2,
+        "etc": 10,
+        "guide": 2,
+        "notice": 1,
+        "reusable_dialogue": 2
+      },
       "grammar_item_count": 12,
       "vocabulary_count": 41,
       "sample_grammar_items": [
@@ -51,8 +117,19 @@
     {
       "unit_no": 2,
       "unit_title": "날씨와 여행",
-      "reading_passage_count": 1,
-      "listening_passage_count": 3,
+      "reading_passage_count": 17,
+      "listening_passage_count": 7,
+      "usable_reading_passage_count": 15,
+      "usable_listening_passage_count": 6,
+      "candidate_type_counts": {
+        "blog": 1,
+        "core_listening": 3,
+        "culture_text": 1,
+        "etc": 3,
+        "guide": 8,
+        "reusable_dialogue": 4,
+        "task_text": 4
+      },
       "grammar_item_count": 11,
       "vocabulary_count": 59,
       "sample_grammar_items": [
@@ -87,8 +164,20 @@
     {
       "unit_no": 3,
       "unit_title": "인터넷 콘텐츠",
-      "reading_passage_count": 3,
-      "listening_passage_count": 3,
+      "reading_passage_count": 17,
+      "listening_passage_count": 8,
+      "usable_reading_passage_count": 10,
+      "usable_listening_passage_count": 4,
+      "candidate_type_counts": {
+        "article": 1,
+        "core_listening": 3,
+        "core_reading": 2,
+        "culture_text": 2,
+        "etc": 11,
+        "guide": 1,
+        "reusable_dialogue": 3,
+        "task_text": 2
+      },
       "grammar_item_count": 9,
       "vocabulary_count": 63,
       "sample_grammar_items": [
@@ -123,8 +212,20 @@
     {
       "unit_no": 4,
       "unit_title": "약속과 만남",
-      "reading_passage_count": 4,
-      "listening_passage_count": 3,
+      "reading_passage_count": 15,
+      "listening_passage_count": 6,
+      "usable_reading_passage_count": 10,
+      "usable_listening_passage_count": 4,
+      "candidate_type_counts": {
+        "blog": 2,
+        "core_listening": 3,
+        "core_reading": 3,
+        "culture_text": 1,
+        "etc": 7,
+        "guide": 1,
+        "reusable_dialogue": 3,
+        "task_text": 1
+      },
       "grammar_item_count": 7,
       "vocabulary_count": 40,
       "sample_grammar_items": [
@@ -158,8 +259,19 @@
     {
       "unit_no": 5,
       "unit_title": "음식과 조리법",
-      "reading_passage_count": 2,
-      "listening_passage_count": 3,
+      "reading_passage_count": 15,
+      "listening_passage_count": 9,
+      "usable_reading_passage_count": 7,
+      "usable_listening_passage_count": 4,
+      "candidate_type_counts": {
+        "blog": 1,
+        "core_listening": 3,
+        "core_reading": 1,
+        "culture_text": 1,
+        "etc": 13,
+        "reusable_dialogue": 3,
+        "task_text": 2
+      },
       "grammar_item_count": 9,
       "vocabulary_count": 73,
       "sample_grammar_items": [
@@ -194,8 +306,19 @@
     {
       "unit_no": 6,
       "unit_title": "여가 생활",
-      "reading_passage_count": 2,
-      "listening_passage_count": 3,
+      "reading_passage_count": 15,
+      "listening_passage_count": 7,
+      "usable_reading_passage_count": 7,
+      "usable_listening_passage_count": 3,
+      "candidate_type_counts": {
+        "blog": 1,
+        "core_listening": 3,
+        "core_reading": 1,
+        "culture_text": 2,
+        "etc": 12,
+        "reusable_dialogue": 1,
+        "task_text": 2
+      },
       "grammar_item_count": 8,
       "vocabulary_count": 77,
       "sample_grammar_items": [
@@ -230,8 +353,19 @@
     {
       "unit_no": 7,
       "unit_title": "소비와 절약",
-      "reading_passage_count": 1,
-      "listening_passage_count": 3,
+      "reading_passage_count": 17,
+      "listening_passage_count": 10,
+      "usable_reading_passage_count": 10,
+      "usable_listening_passage_count": 4,
+      "candidate_type_counts": {
+        "core_listening": 3,
+        "core_reading": 1,
+        "culture_text": 2,
+        "etc": 13,
+        "guide": 1,
+        "reusable_dialogue": 4,
+        "task_text": 3
+      },
       "grammar_item_count": 11,
       "vocabulary_count": 51,
       "sample_grammar_items": [
@@ -266,8 +400,21 @@
     {
       "unit_no": 8,
       "unit_title": "한국 생활",
-      "reading_passage_count": 4,
-      "listening_passage_count": 3,
+      "reading_passage_count": 18,
+      "listening_passage_count": 7,
+      "usable_reading_passage_count": 14,
+      "usable_listening_passage_count": 4,
+      "candidate_type_counts": {
+        "article": 1,
+        "blog": 2,
+        "core_listening": 3,
+        "core_reading": 2,
+        "culture_text": 2,
+        "etc": 7,
+        "guide": 2,
+        "reusable_dialogue": 3,
+        "task_text": 3
+      },
       "grammar_item_count": 10,
       "vocabulary_count": 61,
       "sample_grammar_items": [
@@ -302,8 +449,18 @@
     {
       "unit_no": 9,
       "unit_title": "사건과 사고",
-      "reading_passage_count": 2,
-      "listening_passage_count": 3,
+      "reading_passage_count": 16,
+      "listening_passage_count": 7,
+      "usable_reading_passage_count": 10,
+      "usable_listening_passage_count": 3,
+      "candidate_type_counts": {
+        "core_listening": 3,
+        "core_reading": 2,
+        "culture_text": 2,
+        "etc": 10,
+        "reusable_dialogue": 3,
+        "task_text": 3
+      },
       "grammar_item_count": 8,
       "vocabulary_count": 71,
       "sample_grammar_items": [

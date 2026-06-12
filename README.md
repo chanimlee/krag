@@ -42,7 +42,7 @@ Current record counts:
 
 Additional generated data:
 
-- `rag_jsonl_output/passage_bank.jsonl`: existing reading/listening passages for item drafting
+- `rag_jsonl_output/passage_bank.jsonl`: existing textbook passage candidates for item drafting
 - `rag_jsonl_output/chapter_constraints.jsonl`: unit-level grammar and vocabulary constraints
 
 ## Rebuild JSONL
@@ -109,11 +109,15 @@ Outputs:
 - `reports/textbook_inventory.json`
 - `reports/textbook_inventory.md`
 
+`passage_bank.jsonl` includes explicit reading/listening passages and reusable textbook texts such as complete dialogues, culture texts, task texts, notices, ads, articles, blog-like posts, and guide texts. Each record includes `source_activity`, `candidate_type`, `usable_for_exam`, `priority`, and `extraction_reason`.
+
 ## Propose Exam Blueprint
 
 ```powershell
 & "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\propose_exam_blueprint.py --units 1-9 --total-items 30
 ```
+
+By default, the blueprint uses passage candidates where `usable_for_exam=true` and `priority` is `high` or `medium`.
 
 ## Next Steps
 

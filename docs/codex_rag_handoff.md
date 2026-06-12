@@ -224,7 +224,31 @@ reports/textbook_inventory.json
 reports/textbook_inventory.md
 ```
 
-`passage_bank.jsonl`은 기존 교재의 읽기/듣기 지문을 문항 생성 대상으로 정리한다. `chapter_constraints.jsonl`은 단원별 문법·어휘 제약으로 사용한다.
+`passage_bank.jsonl`은 기존 교재의 읽기/듣기 지문뿐 아니라 말하기 활동 안의 완결된 대화문, 문화/과제 텍스트, 안내문, 광고문, 기사문, 블로그/카페 글, 가이드북 형식 글 등 평가 지문 후보를 문항 생성 대상으로 정리한다. 단순 어휘 목록, 문법 설명, 문제 지시문, 선택지만으로 된 텍스트는 제외한다.
+
+각 passage record에는 다음 분류 필드가 있다.
+
+```text
+source_activity
+candidate_type
+usable_for_exam
+priority
+extraction_reason
+```
+
+현재 확장 추출 결과는 다음과 같다.
+
+```text
+passage_bank records: 214
+reading-like passages: 145
+listening passages: 69
+usable exam passages: 128
+chapter_constraints records: 9
+```
+
+2단원 핵심 기대 지문 8개는 모두 passage_bank에 포함되는 것으로 확인했다. 상세 결과는 `reports/textbook_inventory.md`의 “Unit 2 Expected Passage Coverage” 섹션과 `reports/textbook_inventory.json`의 `unit2_expected_passage_check`에 저장되어 있다.
+
+`chapter_constraints.jsonl`은 단원별 문법·어휘 제약으로 사용한다.
 
 시험 구성안 예시는 다음 명령으로 생성한다.
 
@@ -232,6 +256,8 @@ reports/textbook_inventory.md
 & "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\propose_exam_blueprint.py --units 1-9 --total-items 30 --output reports/exam_blueprint_u01_u09_30items.json
 & "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\propose_exam_blueprint.py --units 3 --total-items 6 --reading-ratio 1.0 --listening-ratio 0.0 --output reports/exam_blueprint_u03_6items_reading.json
 ```
+
+시험 구성안은 기본적으로 `usable_for_exam=true`이고 `priority`가 `high` 또는 `medium`인 지문 후보를 대상으로 문항 수를 배분한다.
 
 문항 생성 프롬프트 설계 초안은 다음 문서에 있다. 아직 LLM API 호출은 구현하지 않았다.
 
