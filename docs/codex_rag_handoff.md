@@ -166,7 +166,46 @@ reports/retrieval_smoke_test.md
 
 TF-IDF 검색기는 임베딩 모델이나 외부 API 없이 실행할 수 있고, 토큰/어절 단위 매칭 결과를 설명하기 쉬우며, 이후 semantic retriever의 성능을 비교할 기준선으로 쓰기 좋기 때문에 baseline retriever로 둔다.
 
-## 11. 다음 단계 제안
+## 11. Python 실행 환경
+
+현재 Windows 환경에서는 앞으로 다음 Python 실행 파일을 프로젝트 기본값으로 사용한다.
+
+```text
+C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe
+```
+
+일반 `python` 명령은 PsychoPy Python을 가리킬 수 있고, 해당 환경에는 `scikit-learn`과 `joblib`이 없을 수 있다. 자세한 실행 명령은 다음 문서에 정리했다.
+
+```text
+docs/python_environment.md
+```
+
+## 12. Retrieval review sheet
+
+Smoke test 결과를 사람이 평가할 수 있도록 TSV/CSV 파일로 변환했다.
+
+생성 명령은 다음과 같다.
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\export_retrieval_review_sheet.py
+```
+
+평가 파일 위치:
+
+```text
+reports/retrieval_review_sheet.tsv
+reports/retrieval_review_sheet.csv
+```
+
+평가 기준 문서:
+
+```text
+docs/retrieval_evaluation_guide.md
+```
+
+평가 파일은 15개 질의에 대해 knowledge top-5와 examples top-5를 포함하므로 총 150개 평가 행을 가진다. 다음 단계에서는 사람이 `relevance`, `usefulness_for_item_generation`, `error_type`, `reviewer_note` 열을 채우면 된다.
+
+## 13. 다음 단계 제안
 
 아직 구현하지 않은 다음 단계 후보는 아래와 같다.
 

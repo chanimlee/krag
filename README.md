@@ -12,6 +12,16 @@ The current repository focuses on a reproducible data foundation: structured Mar
 - `docs/`: handoff notes and research records
 - `reports/`: validation reports
 
+## Python Environment
+
+On this Windows workstation, use the fixed Python executable below:
+
+```text
+C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe
+```
+
+The plain `python` command may point to PsychoPy Python and may not have all required packages. See `docs/python_environment.md`.
+
 ## Current Status
 
 - Markdown to JSONL conversion is complete.
@@ -48,8 +58,34 @@ The validation report is written to:
 reports/validation_report.json
 ```
 
+## Build TF-IDF Retrieval Index
+
+Run from the project root:
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_tfidf_index.py
+```
+
+The generated `rag_index/` directory is local-only and excluded from Git.
+
+## Export Retrieval Review Sheet
+
+Run from the project root:
+
+```powershell
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\export_retrieval_review_sheet.py
+```
+
+Review files:
+
+- `reports/retrieval_review_sheet.tsv`
+- `reports/retrieval_review_sheet.csv`
+
+Evaluation guide:
+
+- `docs/retrieval_evaluation_guide.md`
+
 ## Next Steps
 
-- Build a retrieval index.
-- Test retrieval quality.
+- Human review of `reports/retrieval_review_sheet.tsv` or `.csv`.
 - Design item generation experiments across RAG conditions.
