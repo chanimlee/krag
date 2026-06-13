@@ -23,23 +23,38 @@ DEFAULT_OUTPUT_DIR = ROOT / "reports" / "item_generation_prompt_samples"
 QUESTION_SCHEMA_PATH = DOCS_DIR / "question_type_schema.json"
 
 EXPECTED_OUTPUT_SCHEMA = {
-    "passage_id": "string",
-    "unit": "integer",
-    "skill": "reading|listening",
-    "comprehension_type": "factual|inferential|evaluative",
-    "comprehension_type_label": "사실적 문항|추론적 문항|평가적 문항",
-    "stem_type": "string from docs/question_type_schema.json",
-    "stem_template": "string from the selected stem_type templates or close variant",
-    "question": "string",
-    "options": ["string", "string", "string", "string"],
-    "answer": "integer 1-4",
-    "rationale": "string",
-    "evidence": "string grounded in the passage",
-    "grammar_constraints_used": ["string"],
-    "vocabulary_constraints_used": ["string"],
-    "difficulty": "easy|medium|hard",
-    "difficulty_rationale": "string",
-    "teacher_edit_suggestions": ["string"],
+    "items": [
+        {
+            "passage_id": "string",
+            "unit": "integer",
+            "skill": "reading|listening",
+            "comprehension_type": "factual|inferential|evaluative",
+            "comprehension_type_label": "사실적 문항|추론적 문항|평가적 문항",
+            "stem_type": "string from docs/question_type_schema.json",
+            "stem_template": "string from the selected stem_type templates or close variant",
+            "question": "string",
+            "options": ["string", "string", "string", "string"],
+            "answer": "integer 1-4",
+            "rationale": "string",
+            "evidence": "string grounded in the passage",
+            "grammar_constraints_used": ["string"],
+            "vocabulary_constraints_used": ["string"],
+            "difficulty": "easy|medium|hard",
+            "difficulty_rationale": "string",
+            "teacher_edit_suggestions": ["string"],
+        }
+    ],
+    "skipped_requests": [
+        {
+            "comprehension_type": "factual|inferential|evaluative",
+            "stem_type": "string from docs/question_type_schema.json",
+            "requested_difficulty": "easy|medium|hard",
+            "reason": "string",
+            "suggested_alternatives": [
+                {"comprehension_type": "factual|inferential|evaluative", "stem_type": "string"}
+            ],
+        }
+    ],
 }
 
 LEGACY_ITEM_TYPE_MAP = {
@@ -161,6 +176,104 @@ def normalize_question_request(
         "stem_templates": schema_entry.get("stem_templates", []),
         "difficulty": request.get("difficulty") or schema_entry.get("default_difficulty", "medium"),
         "notes": request.get("notes") or schema_entry.get("notes", ""),
+        "generation_policy": schema_entry.get("generation_policy", {}),
+    }
+
+
+def detect_text_feature_hints(passage_text: str) -> list[str]:
+    feature_keywords = {
+        "추천/조언": ["추천", "권하다", "좋겠", "어떠세요", "해 보세요", "조언", "도움"],
+        "평가 표현": ["좋", "맛있", "그립", "아쉽", "편리", "불편", "특별", "유명", "인기"],
+        "설득 의도": ["바랍니다", "주세요", "필요", "중요", "주문", "신청", "참여"],
+        "태도 단서": ["생각", "느끼", "원하", "좋아", "싫어", "기쁘", "걱정"],
+        "감정 표현": ["그립", "기쁘", "슬프", "걱정", "아쉽", "반갑", "좋아", "싫어"],
+        "순서": ["먼저", "다음", "그리고", "마지막", "1)", "2)", "3)", "첫째", "둘째"],
+        "절차": ["방법", "만드는", "준비", "넣", "끓", "볶", "썰", "섞"],
+        "목적": ["위해", "려고", "목적", "때문", "소개", "안내", "알리"],
+    }
+    found = []
+    for feature, keywords in feature_keywords.items():
+        if any(keyword in passage_text for keyword in keywords):
+            found.append(feature)
+    return found
+
+
+def evaluate_suitability(
+    passage: dict[str, Any],
+    request: dict[str, Any],
+    schema_lookup: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    stem_type = request["stem_type"]
+    schema_entry = schema_lookup[stem_type]
+    rules = schema_entry.get("suitability_rules", {})
+    policy = schema_entry.get("generation_policy", {})
+    candidate_type = passage.get("candidate_type")
+    passage_text = str(passage.get("passage", ""))
+    detected_features = detect_text_feature_hints(passage_text)
+    suitable_types = set(rules.get("suitable_passage_types", []))
+    unsuitable_types = set(rules.get("unsuitable_passage_types", []))
+    required_features = rules.get("required_text_features", [])
+
+    reasons = []
+    likely_suitable = True
+    if candidate_type in unsuitable_types:
+        likely_suitable = False
+        reasons.append(f"candidate_type '{candidate_type}' is listed as unsuitable for '{stem_type}'.")
+    elif suitable_types and candidate_type not in suitable_types:
+        likely_suitable = False
+        reasons.append(f"candidate_type '{candidate_type}' is not listed as suitable for '{stem_type}'.")
+
+    matched_required_features = [
+        feature
+        for feature in required_features
+        if feature in detected_features or any(part in detected_features for part in feature.split("/"))
+    ]
+    if rules.get("unsuitable_if_missing") and not matched_required_features:
+        likely_suitable = False
+        reasons.append("required text features were not confidently detected.")
+    if matched_required_features:
+        reasons.append("detected relevant text features: " + ", ".join(matched_required_features))
+    if (
+        request["comprehension_type"] == "evaluative"
+        and candidate_type in unsuitable_types
+        and len(matched_required_features) >= 2
+    ):
+        likely_suitable = True
+        reasons.append(
+            "evaluative text features were detected, so the text may be suitable despite the passage type warning."
+        )
+
+    return {
+        "comprehension_type": request["comprehension_type"],
+        "stem_type": stem_type,
+        "requested_difficulty": request.get("difficulty"),
+        "candidate_type": candidate_type,
+        "likely_suitable": likely_suitable,
+        "reasons": reasons,
+        "required_text_features": required_features,
+        "detected_text_features": detected_features,
+        "generation_policy": policy,
+        "fallback_recommendations": schema_entry.get("fallback_recommendations", []),
+    }
+
+
+def build_skip_policy() -> dict[str, Any]:
+    return {
+        "allow_skip": True,
+        "do_not_force_generation": True,
+        "skip_when": [
+            "requested stem_type is not suitable for the passage type",
+            "required text features are missing",
+            "evidence cannot be found inside the passage",
+            "evaluative request would require personal opinion or outside background knowledge",
+        ],
+        "skipped_request_required_fields": [
+            "comprehension_type",
+            "stem_type",
+            "requested_difficulty",
+            "reason",
+            "suggested_alternatives",
+        ],
     }
 
 
@@ -244,6 +357,7 @@ def build_prompt(
     passage: dict[str, Any],
     constraints: dict[str, Any],
     question_requests: list[dict[str, Any]],
+    suitability_hints: list[dict[str, Any]],
 ) -> str:
     title = infer_passage_title(passage)
     passage_payload = {
@@ -273,8 +387,14 @@ Task:
 - Do not modify the selected passage.
 - Follow the question type system derived from sample_question.md.
 
-Question requests:
+Requested questions:
 {json.dumps(question_requests, ensure_ascii=False, indent=2)}
+
+Suitability hints:
+{json.dumps(suitability_hints, ensure_ascii=False, indent=2)}
+
+Skip policy:
+{json.dumps(build_skip_policy(), ensure_ascii=False, indent=2)}
 
 Passage metadata and text:
 {json.dumps(passage_payload, ensure_ascii=False, indent=2)}
@@ -283,6 +403,11 @@ Unit grammar and vocabulary constraints:
 {json.dumps(constraint_payload, ensure_ascii=False, indent=2)}
 
 Constraints:
+- Generate an item only when the requested question type is suitable for the passage.
+- If a requested question type is unsuitable, do not force an item. Put it in skipped_requests.
+- skipped_requests must include comprehension_type, stem_type, requested_difficulty, reason, and suggested_alternatives.
+- Evaluative questions require enough passage-internal evidence such as author attitude, viewpoint, purpose, advice, evaluation, persuasion, or feeling.
+- Evaluative questions must not ask for the learner's personal opinion or outside background knowledge.
 - factual questions check information explicitly stated in the passage.
 - inferential questions ask what can be judged from passage evidence even when not directly stated.
 - evaluative questions judge appropriateness, validity, attitude, purpose, feeling, or stance, but must not require background knowledge outside the passage.
@@ -293,6 +418,8 @@ Constraints:
 - Avoid excessive use of advanced grammar not taught in this unit.
 - evidence must be a non-empty passage-grounded string.
 - Return only valid JSON.
+- The top-level JSON must contain "items" and "skipped_requests" lists.
+- At least one of "items" or "skipped_requests" must be non-empty.
 
 Expected output JSON schema:
 {json.dumps(EXPECTED_OUTPUT_SCHEMA, ensure_ascii=False, indent=2)}
@@ -316,6 +443,10 @@ def build_packages(args: argparse.Namespace) -> list[dict[str, Any]]:
         constraints = constraints_by_unit.get(passage.get("unit_no"))
         if not constraints:
             raise ValueError(f"No chapter constraints found for unit {passage.get('unit_no')}")
+        suitability_hints = [
+            evaluate_suitability(passage, request, schema_lookup)
+            for request in question_requests
+        ]
         request_slug = "_".join(slug(request["stem_type"]) for request in question_requests[:3])
         prompt_id = f"prompt_{passage['id']}_{request_slug}_{len(question_requests)}items"
         packages.append(
@@ -328,9 +459,13 @@ def build_packages(args: argparse.Namespace) -> list[dict[str, Any]]:
                 "candidate_type": passage.get("candidate_type"),
                 "priority": passage.get("priority"),
                 "passage_title": infer_passage_title(passage),
+                "requested_questions": question_requests,
                 "question_requests": question_requests,
+                "suitability_hints": suitability_hints,
+                "allow_skip": True,
+                "skip_policy": build_skip_policy(),
                 "item_count": len(question_requests),
-                "prompt": build_prompt(passage, constraints, question_requests),
+                "prompt": build_prompt(passage, constraints, question_requests, suitability_hints),
                 "expected_output_schema": EXPECTED_OUTPUT_SCHEMA,
             }
         )
@@ -359,6 +494,12 @@ def write_markdown(packages: list[dict[str, Any]], path: Path) -> None:
         for index, request in enumerate(package["question_requests"], start=1):
             lines.append(
                 f"{index}. {request['comprehension_type_label']} / {request['stem_type']} / {request['difficulty']}"
+            )
+        lines.extend(["", "### Suitability Hints", ""])
+        for index, hint in enumerate(package.get("suitability_hints", []), start=1):
+            reasons = "; ".join(hint.get("reasons", [])) or "No specific warning."
+            lines.append(
+                f"{index}. {hint['comprehension_type']} / {hint['stem_type']} / likely_suitable={hint['likely_suitable']} / {reasons}"
             )
         lines.extend(["", "### Prompt", "", "```text", package["prompt"].rstrip(), "```", ""])
     path.write_text("\n".join(lines), encoding="utf-8")

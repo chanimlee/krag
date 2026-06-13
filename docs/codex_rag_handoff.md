@@ -292,8 +292,27 @@ inferential = 추론적 문항
 evaluative = 평가적 문항
 ```
 
+각 `stem_type`에는 적합성 판단과 skip 처리를 위한 필드가 있다.
+
+```text
+suitability_rules
+generation_policy
+fallback_recommendations
+```
+
+Prompt package에는 다음 필드를 포함한다.
+
+```text
+requested_questions
+suitability_hints
+allow_skip
+skip_policy
+```
+
+요청된 문항 유형이 지문에 적합하지 않으면 모델은 억지로 문항을 만들지 않고 `skipped_requests`에 기록해야 한다. 특히 평가적 문항은 지문 안에 필자의 태도, 관점, 목적, 조언, 평가 표현, 설득 의도, 감정 표현 등 판단 근거가 충분할 때만 생성한다.
+
 ```powershell
-& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --question-plan reports/item_generation_prompt_samples/question_plan_u05_bulgogi_three_types.json --output-dir reports/item_generation_prompt_samples
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 4 --question-plan reports/item_generation_prompt_samples/question_plan_u05_bulgogi_suitability.json --output-dir reports/item_generation_prompt_samples
 
 & "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --comprehension-type factual --stem-type "내용 일치" --output-dir reports/item_generation_prompt_samples
 ```
@@ -353,6 +372,9 @@ reports/generated_item_samples/raw_responses/
 - comprehension_type은 factual/inferential/evaluative 중 하나여야 한다.
 - stem_type은 `docs/question_type_schema.json`에 있어야 한다.
 - stem_template은 해당 stem_type에 등록된 문구이거나 이에 준하는 변형이어야 한다.
+- 모델 응답은 `items`와 `skipped_requests` 리스트를 포함할 수 있다.
+- `items`와 `skipped_requests` 중 하나 이상은 비어 있으면 안 된다.
+- skipped_request의 `stem_type`도 schema에 있어야 하고 `reason`은 비어 있으면 안 된다.
 
 현재 컴퓨터 세션에서는 `OPENAI_API_KEY`가 설정되어 있지 않아 실제 OpenAI 호출은 실행하지 않았다. 대신 `--dry-run --limit 1`과 mock 비JSON 응답을 사용해 JSON 파싱 실패 시 raw response와 error record가 저장되는지 확인했다.
 
@@ -363,7 +385,7 @@ reports/item_generation_prompt_samples/prompts_passage_u05_reading_008.jsonl
 reports/item_generation_prompt_samples/prompts_passage_u05_reading_010.jsonl
 ```
 
-각 prompt package는 사실적 문항 1개, 추론적 문항 1개, 평가적 문항 1개 생성을 요청한다.
+각 prompt package는 사실적 문항 2개, 추론적 문항 1개, 평가적 문항 1개를 요청한다. 불고기 만들기 지문은 절차 중심 조리법이므로 평가적 문항이 skipped될 수 있어야 한다. 쌀국수 지문은 고향 음식에 대한 그리움과 추천/소개 의도가 있어 평가적 문항 생성 가능성이 있지만, 지문 밖 배경지식을 요구하면 안 된다.
 
 ## 15. 다음 단계 제안
 

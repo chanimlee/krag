@@ -127,7 +127,7 @@ def get_item_count(package: dict[str, Any]) -> int:
 
 
 def get_question_requests(package: dict[str, Any]) -> list[dict[str, Any]]:
-    requests = package.get("question_requests")
+    requests = package.get("requested_questions") or package.get("question_requests")
     if isinstance(requests, list):
         return [request for request in requests if isinstance(request, dict)]
 
@@ -176,8 +176,12 @@ def build_provider_prompt(package: dict[str, Any]) -> str:
     return (
         "You are generating Korean language assessment items for a teacher.\n"
         "Return ONLY valid JSON. Do not wrap the JSON in Markdown fences.\n"
-        f"Return a JSON array with exactly {item_count} item object(s).\n"
-        "Each item must follow one requested question type in order.\n"
+        f"There are {item_count} requested question(s).\n"
+        "Return a JSON object with two lists: items and skipped_requests.\n"
+        "Generate an item only when the requested question type is suitable for the passage.\n"
+        "If a request is unsuitable, put it in skipped_requests instead of forcing an item.\n"
+        "At least one of items or skipped_requests must be non-empty.\n"
+        "Each item must follow one requested question type.\n"
         "Use the existing passage only. Do not create or modify the passage.\n"
         "Use options as a 4-element array and answer as an integer from 1 to 4.\n"
         "Use rationale, evidence, difficulty_rationale as non-empty strings.\n"
@@ -320,24 +324,40 @@ def normalize_list(value: Any) -> list[str]:
     return []
 
 
-def normalize_generated_payload(payload: Any) -> list[dict[str, Any]]:
+def normalize_generated_payload(payload: Any) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     if isinstance(payload, list):
         items = payload
+        skipped_requests = []
     elif isinstance(payload, dict):
         if isinstance(payload.get("items"), list):
             items = payload["items"]
+            skipped_requests = payload.get("skipped_requests", [])
         elif isinstance(payload.get("generated_items"), list):
             items = payload["generated_items"]
+            skipped_requests = payload.get("skipped_requests", [])
+        elif isinstance(payload.get("skipped_requests"), list):
+            items = []
+            skipped_requests = payload["skipped_requests"]
         else:
             items = [payload]
+            skipped_requests = []
     else:
         raise GenerationError("Parsed JSON is not an object or array")
-    normalized = []
+    normalized_items = []
     for item in items:
         if not isinstance(item, dict):
             raise GenerationError("Parsed item is not an object")
-        normalized.append(item)
-    return normalized
+        normalized_items.append(item)
+    normalized_skips = []
+    if not isinstance(skipped_requests, list):
+        raise GenerationError("skipped_requests must be a list")
+    for skipped_request in skipped_requests:
+        if not isinstance(skipped_request, dict):
+            raise GenerationError("skipped_request is not an object")
+        normalized_skips.append(skipped_request)
+    if not normalized_items and not normalized_skips:
+        raise GenerationError("At least one of items or skipped_requests must be non-empty")
+    return normalized_items, normalized_skips
 
 
 def request_for_index(package: dict[str, Any], item_index: int) -> dict[str, Any]:
@@ -430,6 +450,55 @@ def enrich_and_validate_item(
     return item, errors
 
 
+def enrich_and_validate_skipped_request(
+    raw_skip: dict[str, Any],
+    package: dict[str, Any],
+    skip_index: int,
+    model: str,
+    generated_at: str,
+    schema_lookup: dict[str, dict[str, Any]],
+) -> tuple[dict[str, Any], list[str]]:
+    stem_type = str(raw_skip.get("stem_type") or "").strip()
+    schema_entry = schema_lookup.get(stem_type, {})
+    comprehension_type = str(
+        raw_skip.get("comprehension_type")
+        or schema_entry.get("comprehension_type")
+        or ""
+    ).strip()
+    requested_difficulty = str(raw_skip.get("requested_difficulty") or raw_skip.get("difficulty") or "").strip()
+    suggested_alternatives = raw_skip.get("suggested_alternatives", [])
+    if not isinstance(suggested_alternatives, list):
+        suggested_alternatives = []
+
+    skipped = {
+        "skip_id": f"skip_{package.get('prompt_id', 'prompt')}_{skip_index:03d}",
+        "prompt_id": package.get("prompt_id"),
+        "unit": package.get("unit"),
+        "passage_id": package.get("passage_id"),
+        "skill": package.get("skill"),
+        "comprehension_type": comprehension_type,
+        "stem_type": stem_type,
+        "requested_difficulty": requested_difficulty,
+        "reason": str(raw_skip.get("reason") or "").strip(),
+        "suggested_alternatives": suggested_alternatives,
+        "generation_model": model,
+        "generated_at": generated_at,
+    }
+
+    errors: list[str] = []
+    if skipped["comprehension_type"] not in {"factual", "inferential", "evaluative"}:
+        errors.append("skipped_request comprehension_type must be factual, inferential, or evaluative")
+    if skipped["stem_type"] not in schema_lookup:
+        errors.append("skipped_request stem_type must exist in docs/question_type_schema.json")
+    if stem_type in schema_lookup and schema_lookup[stem_type]["comprehension_type"] != skipped["comprehension_type"]:
+        errors.append("skipped_request comprehension_type must match the selected stem_type")
+    if not skipped["reason"]:
+        errors.append("skipped_request reason must not be empty")
+    if not isinstance(skipped["suggested_alternatives"], list):
+        errors.append("skipped_request suggested_alternatives must be a list")
+    return skipped, errors
+
+
 def write_raw_response(raw_dir: Path, prompt_id: str, text: str) -> Path:
     raw_dir.mkdir(parents=True, exist_ok=True)
     safe_prompt_id = re.sub(r"[^A-Za-z0-9가-힣_-]+", "_", prompt_id).strip("_") or "prompt"
@@ -438,7 +507,11 @@ def write_raw_response(raw_dir: Path, prompt_id: str, text: str) -> Path:
     return path
 
 
-def format_markdown(items: list[dict[str, Any]], errors: list[dict[str, Any]]) -> str:
+def format_markdown(
+    items: list[dict[str, Any]],
+    skipped_requests: list[dict[str, Any]],
+    errors: list[dict[str, Any]],
+) -> str:
     lines = ["# Generated Item Samples", ""]
     if items:
         for item in items:
@@ -486,6 +559,30 @@ def format_markdown(items: list[dict[str, Any]], errors: list[dict[str, Any]]) -
     else:
         lines.extend(["No valid generated items were produced.", ""])
 
+    lines.extend(["## Skipped Requests", ""])
+    if skipped_requests:
+        for skipped in skipped_requests:
+            alternatives = skipped.get("suggested_alternatives", [])
+            lines.extend(
+                [
+                    f"### {skipped['skip_id']}",
+                    "",
+                    f"- comprehension_type: {skipped['comprehension_type']}",
+                    f"- stem_type: {skipped['stem_type']}",
+                    f"- requested_difficulty: {skipped['requested_difficulty']}",
+                    f"- reason: {skipped['reason']}",
+                    "- suggested_alternatives:",
+                ]
+            )
+            if alternatives:
+                for alternative in alternatives:
+                    lines.append(f"  - {json.dumps(alternative, ensure_ascii=False)}")
+            else:
+                lines.append("  - none")
+            lines.append("")
+    else:
+        lines.extend(["No skipped requests were recorded.", ""])
+
     if errors:
         lines.extend(["# Errors", ""])
         for error in errors:
@@ -515,7 +612,9 @@ def write_dry_run_plan(path: Path, packages: list[dict[str, Any]], model: str, t
                 "unit": package.get("unit"),
                 "passage_id": package.get("passage_id"),
                 "skill": package.get("skill"),
-                "question_requests": get_question_requests(package),
+                "requested_questions": get_question_requests(package),
+                "suitability_hints": package.get("suitability_hints", []),
+                "allow_skip": package.get("allow_skip", True),
                 "item_count": get_item_count(package),
                 "prompt_characters": len(get_prompt_text(package)),
             }
@@ -540,6 +639,7 @@ def main() -> int:
         raise SystemExit("No prompt packages to process.")
 
     items_path = output_dir / f"generated_items_{input_stem}.jsonl"
+    skipped_path = output_dir / f"skipped_requests_{input_stem}.jsonl"
     md_path = output_dir / f"generated_items_{input_stem}.md"
     errors_path = output_dir / f"generation_errors_{input_stem}.jsonl"
     dry_run_path = output_dir / f"dry_run_{input_stem}.json"
@@ -554,9 +654,10 @@ def main() -> int:
         print(f"Dry-run plan: {dry_run_path}")
         return 0
 
-    ensure_can_write([items_path, md_path, errors_path], args.overwrite)
+    ensure_can_write([items_path, skipped_path, md_path, errors_path], args.overwrite)
 
     generated_items: list[dict[str, Any]] = []
+    skipped_requests: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
     generated_at = datetime.now(timezone.utc).isoformat()
 
@@ -573,7 +674,7 @@ def main() -> int:
                 mock_response_text=args.mock_response_text,
             )
             parsed = parse_json_response(raw_text)
-            raw_items = normalize_generated_payload(parsed)
+            raw_items, raw_skipped_requests = normalize_generated_payload(parsed)
         except GenerationError as exc:
             raw_path = write_raw_response(raw_dir, prompt_id, raw_text) if isinstance(raw_text, str) else None
             errors.append(
@@ -615,15 +716,43 @@ def main() -> int:
                 continue
             generated_items.append(item)
 
+        for skip_index, raw_skip in enumerate(raw_skipped_requests, start=1):
+            skipped, validation_errors = enrich_and_validate_skipped_request(
+                raw_skip=raw_skip,
+                package=package,
+                skip_index=skip_index,
+                model=args.model,
+                generated_at=generated_at,
+                schema_lookup=schema_lookup,
+            )
+            if validation_errors:
+                errors.append(
+                    {
+                        "prompt_id": prompt_id,
+                        "passage_id": package.get("passage_id"),
+                        "unit": package.get("unit"),
+                        "error_type": "skipped_request_validation_error",
+                        "message": "; ".join(validation_errors),
+                        "raw_skipped_request": raw_skip,
+                        "generation_model": args.model,
+                        "generated_at": generated_at,
+                    }
+                )
+                continue
+            skipped_requests.append(skipped)
+
     write_jsonl(items_path, generated_items)
+    write_jsonl(skipped_path, skipped_requests)
     write_jsonl(errors_path, errors)
-    md_path.write_text(format_markdown(generated_items, errors), encoding="utf-8")
+    md_path.write_text(format_markdown(generated_items, skipped_requests, errors), encoding="utf-8")
 
     print("Generation completed.")
     print(f"Prompt packages processed: {len(packages)}")
     print(f"Valid generated items: {len(generated_items)}")
+    print(f"Skipped requests: {len(skipped_requests)}")
     print(f"Errors: {len(errors)}")
     print(f"Items JSONL: {items_path}")
+    print(f"Skipped JSONL: {skipped_path}")
     print(f"Markdown: {md_path}")
     print(f"Errors JSONL: {errors_path}")
     return 0

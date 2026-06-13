@@ -1,6 +1,6 @@
 # Item Generation Prompt Packages
 
-## prompt_passage_u05_reading_008_content_match_content_inference_author_attitude_3items
+## prompt_passage_u05_reading_008_content_match_sequence_content_inference_4items
 
 - unit: 5
 - passage_id: `passage_u05_reading_008`
@@ -8,13 +8,21 @@
 - source_activity: reading
 - candidate_type: recipe
 - priority: high
-- item_count: 3
+- item_count: 4
 
 ### Question Requests
 
 1. 사실적 문항 / 내용 일치 / medium
-2. 추론적 문항 / 내용 추론 / medium
-3. 평가적 문항 / 필자 태도 평가 / hard
+2. 사실적 문항 / 순서 파악 / hard
+3. 추론적 문항 / 내용 추론 / medium
+4. 평가적 문항 / 필자 태도 평가 / hard
+
+### Suitability Hints
+
+1. factual / 내용 일치 / likely_suitable=True / detected relevant text features: 절차
+2. factual / 순서 파악 / likely_suitable=True / detected relevant text features: 순서, 절차
+3. inferential / 내용 추론 / likely_suitable=True / No specific warning.
+4. evaluative / 필자 태도 평가 / likely_suitable=False / candidate_type 'recipe' is listed as unsuitable for '필자 태도 평가'.; detected relevant text features: 평가 표현
 
 ### Prompt
 
@@ -22,13 +30,13 @@
 You are an assistant for Korean language teachers.
 
 Task:
-- Generate 3 Korean proficiency assessment item(s) for the selected existing textbook passage.
+- Generate 4 Korean proficiency assessment item(s) for the selected existing textbook passage.
 - Generate only question stems and answer options.
 - Do not create a new passage.
 - Do not modify the selected passage.
 - Follow the question type system derived from sample_question.md.
 
-Question requests:
+Requested questions:
 [
   {
     "comprehension_type": "factual",
@@ -40,7 +48,27 @@ Question requests:
       "다음 글의 내용과 같은 것을 고르십시오."
     ],
     "difficulty": "medium",
-    "notes": "지문에 명시된 세부 정보와 일치하는 선택지를 고르는 유형이다."
+    "notes": "지문에 명시된 정보와 일치하는 선택지를 고르는 유형이다.",
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 3
+    }
+  },
+  {
+    "comprehension_type": "factual",
+    "comprehension_type_label": "사실적 문항",
+    "stem_type": "순서 파악",
+    "stem_templates": [
+      "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오."
+    ],
+    "difficulty": "hard",
+    "notes": "사건이나 절차의 흐름, 담화 연결 관계를 바탕으로 문장 위치를 판단한다.",
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 1
+    }
   },
   {
     "comprehension_type": "inferential",
@@ -50,7 +78,12 @@ Question requests:
       "윗글의 내용으로 알 수 있는 것을 고르십시오."
     ],
     "difficulty": "medium",
-    "notes": "지문에 직접 쓰이지 않았지만 명시 정보들을 근거로 판단할 수 있는 내용을 묻는다."
+    "notes": "지문에 직접 쓰이지 않았지만 명시 정보들을 근거로 판단할 수 있는 내용을 묻는다.",
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 2
+    }
   },
   {
     "comprehension_type": "evaluative",
@@ -62,9 +95,191 @@ Question requests:
       "밑줄 친 부분에서 나타난 필자의 태도로 알맞은 것을 고르십시오."
     ],
     "difficulty": "hard",
-    "notes": "지문 표현과 맥락에 근거해 필자의 태도나 관점을 판단한다. 지문 밖 배경지식은 요구하지 않는다."
+    "notes": "지문 표현과 맥락에 근거해 필자의 태도나 관점을 판단한다. 지문 밖 배경지식은 요구하지 않는다.",
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 1
+    }
   }
 ]
+
+Suitability hints:
+[
+  {
+    "comprehension_type": "factual",
+    "stem_type": "내용 일치",
+    "requested_difficulty": "medium",
+    "candidate_type": "recipe",
+    "likely_suitable": true,
+    "reasons": [
+      "detected relevant text features: 절차"
+    ],
+    "required_text_features": [
+      "명시적 정보",
+      "사건",
+      "대상",
+      "절차",
+      "장소",
+      "인물"
+    ],
+    "detected_text_features": [
+      "평가 표현",
+      "순서",
+      "절차"
+    ],
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 3
+    },
+    "fallback_recommendations": [
+      {
+        "comprehension_type": "factual",
+        "stem_type": "세부 내용 파악"
+      },
+      {
+        "comprehension_type": "inferential",
+        "stem_type": "내용 추론"
+      }
+    ]
+  },
+  {
+    "comprehension_type": "factual",
+    "stem_type": "순서 파악",
+    "requested_difficulty": "hard",
+    "candidate_type": "recipe",
+    "likely_suitable": true,
+    "reasons": [
+      "detected relevant text features: 순서, 절차"
+    ],
+    "required_text_features": [
+      "순서",
+      "절차",
+      "시간 흐름",
+      "담화 연결",
+      "사건 전개"
+    ],
+    "detected_text_features": [
+      "평가 표현",
+      "순서",
+      "절차"
+    ],
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 1
+    },
+    "fallback_recommendations": [
+      {
+        "comprehension_type": "factual",
+        "stem_type": "내용 일치"
+      },
+      {
+        "comprehension_type": "factual",
+        "stem_type": "세부 내용 파악"
+      }
+    ]
+  },
+  {
+    "comprehension_type": "inferential",
+    "stem_type": "내용 추론",
+    "requested_difficulty": "medium",
+    "candidate_type": "recipe",
+    "likely_suitable": true,
+    "reasons": [],
+    "required_text_features": [
+      "여러 정보의 결합",
+      "암시",
+      "원인",
+      "결과",
+      "목적",
+      "상황"
+    ],
+    "detected_text_features": [
+      "평가 표현",
+      "순서",
+      "절차"
+    ],
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 2
+    },
+    "fallback_recommendations": [
+      {
+        "comprehension_type": "factual",
+        "stem_type": "내용 일치"
+      },
+      {
+        "comprehension_type": "factual",
+        "stem_type": "세부 내용 파악"
+      }
+    ]
+  },
+  {
+    "comprehension_type": "evaluative",
+    "stem_type": "필자 태도 평가",
+    "requested_difficulty": "hard",
+    "candidate_type": "recipe",
+    "likely_suitable": false,
+    "reasons": [
+      "candidate_type 'recipe' is listed as unsuitable for '필자 태도 평가'.",
+      "detected relevant text features: 평가 표현"
+    ],
+    "required_text_features": [
+      "필자의 의견",
+      "추천/조언",
+      "평가 표현",
+      "설득 의도",
+      "태도 단서",
+      "감정 표현"
+    ],
+    "detected_text_features": [
+      "평가 표현",
+      "순서",
+      "절차"
+    ],
+    "generation_policy": {
+      "allow_generation": true,
+      "require_suitability_check": true,
+      "max_items_per_passage": 1
+    },
+    "fallback_recommendations": [
+      {
+        "comprehension_type": "factual",
+        "stem_type": "내용 일치"
+      },
+      {
+        "comprehension_type": "factual",
+        "stem_type": "순서 파악"
+      },
+      {
+        "comprehension_type": "inferential",
+        "stem_type": "내용 추론"
+      }
+    ]
+  }
+]
+
+Skip policy:
+{
+  "allow_skip": true,
+  "do_not_force_generation": true,
+  "skip_when": [
+    "requested stem_type is not suitable for the passage type",
+    "required text features are missing",
+    "evidence cannot be found inside the passage",
+    "evaluative request would require personal opinion or outside background knowledge"
+  ],
+  "skipped_request_required_fields": [
+    "comprehension_type",
+    "stem_type",
+    "requested_difficulty",
+    "reason",
+    "suggested_alternatives"
+  ]
+}
 
 Passage metadata and text:
 {
@@ -173,6 +388,11 @@ Unit grammar and vocabulary constraints:
 }
 
 Constraints:
+- Generate an item only when the requested question type is suitable for the passage.
+- If a requested question type is unsuitable, do not force an item. Put it in skipped_requests.
+- skipped_requests must include comprehension_type, stem_type, requested_difficulty, reason, and suggested_alternatives.
+- Evaluative questions require enough passage-internal evidence such as author attitude, viewpoint, purpose, advice, evaluation, persuasion, or feeling.
+- Evaluative questions must not ask for the learner's personal opinion or outside background knowledge.
 - factual questions check information explicitly stated in the passage.
 - inferential questions ask what can be judged from passage evidence even when not directly stated.
 - evaluative questions judge appropriateness, validity, attitude, purpose, feeling, or stance, but must not require background knowledge outside the passage.
@@ -183,36 +403,56 @@ Constraints:
 - Avoid excessive use of advanced grammar not taught in this unit.
 - evidence must be a non-empty passage-grounded string.
 - Return only valid JSON.
+- The top-level JSON must contain "items" and "skipped_requests" lists.
+- At least one of "items" or "skipped_requests" must be non-empty.
 
 Expected output JSON schema:
 {
-  "passage_id": "string",
-  "unit": "integer",
-  "skill": "reading|listening",
-  "comprehension_type": "factual|inferential|evaluative",
-  "comprehension_type_label": "사실적 문항|추론적 문항|평가적 문항",
-  "stem_type": "string from docs/question_type_schema.json",
-  "stem_template": "string from the selected stem_type templates or close variant",
-  "question": "string",
-  "options": [
-    "string",
-    "string",
-    "string",
-    "string"
+  "items": [
+    {
+      "passage_id": "string",
+      "unit": "integer",
+      "skill": "reading|listening",
+      "comprehension_type": "factual|inferential|evaluative",
+      "comprehension_type_label": "사실적 문항|추론적 문항|평가적 문항",
+      "stem_type": "string from docs/question_type_schema.json",
+      "stem_template": "string from the selected stem_type templates or close variant",
+      "question": "string",
+      "options": [
+        "string",
+        "string",
+        "string",
+        "string"
+      ],
+      "answer": "integer 1-4",
+      "rationale": "string",
+      "evidence": "string grounded in the passage",
+      "grammar_constraints_used": [
+        "string"
+      ],
+      "vocabulary_constraints_used": [
+        "string"
+      ],
+      "difficulty": "easy|medium|hard",
+      "difficulty_rationale": "string",
+      "teacher_edit_suggestions": [
+        "string"
+      ]
+    }
   ],
-  "answer": "integer 1-4",
-  "rationale": "string",
-  "evidence": "string grounded in the passage",
-  "grammar_constraints_used": [
-    "string"
-  ],
-  "vocabulary_constraints_used": [
-    "string"
-  ],
-  "difficulty": "easy|medium|hard",
-  "difficulty_rationale": "string",
-  "teacher_edit_suggestions": [
-    "string"
+  "skipped_requests": [
+    {
+      "comprehension_type": "factual|inferential|evaluative",
+      "stem_type": "string from docs/question_type_schema.json",
+      "requested_difficulty": "easy|medium|hard",
+      "reason": "string",
+      "suggested_alternatives": [
+        {
+          "comprehension_type": "factual|inferential|evaluative",
+          "stem_type": "string"
+        }
+      ]
+    }
   ]
 }
 ```

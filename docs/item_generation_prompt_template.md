@@ -44,6 +44,24 @@ You must not create a new passage. Use only the selected existing passage. Gener
       "difficulty": "medium"
     }
   ]
+  ,
+  "suitability_hints": [
+    {
+      "comprehension_type": "evaluative",
+      "stem_type": "필자 태도 평가",
+      "requested_difficulty": "hard",
+      "candidate_type": "recipe",
+      "likely_suitable": false,
+      "reasons": ["candidate_type 'recipe' is listed as unsuitable for '필자 태도 평가'."],
+      "fallback_recommendations": [
+        {"comprehension_type": "factual", "stem_type": "내용 일치"}
+      ]
+    }
+  ],
+  "allow_skip": true,
+  "skip_policy": {
+    "do_not_force_generation": true
+  }
 }
 ```
 
@@ -61,6 +79,9 @@ You must not create a new passage. Use only the selected existing passage. Gener
 - Do not generate a new passage.
 - Generate only the question and options, plus teacher-facing answer/rationale metadata.
 - Use the stem type and stem template defined in `docs/question_type_schema.json`.
+- Generate an item only when the requested question type is suitable for the passage.
+- If the passage is unsuitable for a requested question type, record it in `skipped_requests`.
+- Do not force evaluative questions for passages without passage-internal attitude, viewpoint, purpose, advice, evaluation, persuasion, or feeling evidence.
 - The correct answer must be clearly supported by the passage.
 - Distractors must be plausible but inconsistent with, unsupported by, or different from the passage.
 - Keep grammar and vocabulary within the unit constraints as much as possible.
@@ -72,23 +93,38 @@ You must not create a new passage. Use only the selected existing passage. Gener
 
 ```json
 {
-  "passage_id": "...",
-  "unit": 5,
-  "skill": "reading",
-  "comprehension_type": "factual",
-  "comprehension_type_label": "사실적 문항",
-  "stem_type": "내용 일치",
-  "stem_template": "윗글의 내용과 같은 것을 고르십시오.",
-  "question": "윗글의 내용과 같은 것을 고르십시오.",
-  "options": ["...", "...", "...", "..."],
-  "answer": 2,
-  "rationale": "정답과 오답의 판단 근거를 설명한다.",
-  "evidence": "지문 안의 근거 문장 또는 표현",
-  "grammar_constraints_used": [],
-  "vocabulary_constraints_used": [],
-  "difficulty": "medium",
-  "difficulty_rationale": "난이도 판단 이유",
-  "teacher_edit_suggestions": []
+  "items": [
+    {
+      "passage_id": "...",
+      "unit": 5,
+      "skill": "reading",
+      "comprehension_type": "factual",
+      "comprehension_type_label": "사실적 문항",
+      "stem_type": "내용 일치",
+      "stem_template": "윗글의 내용과 같은 것을 고르십시오.",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "options": ["...", "...", "...", "..."],
+      "answer": 2,
+      "rationale": "정답과 오답의 판단 근거를 설명한다.",
+      "evidence": "지문 안의 근거 문장 또는 표현",
+      "grammar_constraints_used": [],
+      "vocabulary_constraints_used": [],
+      "difficulty": "medium",
+      "difficulty_rationale": "난이도 판단 이유",
+      "teacher_edit_suggestions": []
+    }
+  ],
+  "skipped_requests": [
+    {
+      "comprehension_type": "evaluative",
+      "stem_type": "필자 태도 평가",
+      "requested_difficulty": "hard",
+      "reason": "지문이 절차 중심 조리법이라 필자의 태도나 관점을 판단할 근거가 부족함.",
+      "suggested_alternatives": [
+        {"comprehension_type": "factual", "stem_type": "내용 일치"}
+      ]
+    }
+  ]
 }
 ```
 
@@ -108,8 +144,13 @@ Unit constraints:
 Question requests:
 {question_requests_json}
 
+Suitability hints:
+{suitability_hints_json}
+
 Requirements:
-- Generate exactly the requested number of items.
+- Handle exactly the requested number of question requests across `items` and `skipped_requests`.
+- Generate only suitable requests.
+- If a request is unsuitable, add it to `skipped_requests` instead of forcing an item.
 - Follow the requested comprehension_type, stem_type, stem_templates, and difficulty.
 - factual questions must check information explicitly stated in the passage.
 - inferential questions must be answerable from passage evidence.
@@ -138,8 +179,13 @@ Unit constraints:
 Question requests:
 {question_requests_json}
 
+Suitability hints:
+{suitability_hints_json}
+
 Requirements:
-- Generate exactly the requested number of items.
+- Handle exactly the requested number of question requests across `items` and `skipped_requests`.
+- Generate only suitable requests.
+- If a request is unsuitable, add it to `skipped_requests` instead of forcing an item.
 - Follow the requested comprehension_type, stem_type, stem_templates, and difficulty.
 - factual questions must check information explicitly stated in the script.
 - inferential questions must be answerable from script evidence.
@@ -179,6 +225,8 @@ Check:
 7. Each distractor is plausible but not correct according to the passage.
 8. The stem and options do not overuse grammar or vocabulary outside the unit constraints.
 9. evidence, rationale, difficulty_rationale, and teacher_edit_suggestions are complete.
+10. skipped_requests are used when a requested question type is unsuitable.
+11. each skipped_request has comprehension_type, stem_type, requested_difficulty, reason, and suggested_alternatives.
 
 Return validation results as JSON with fields:
 - passed

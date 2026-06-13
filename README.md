@@ -134,10 +134,12 @@ Schema files:
 - `docs/question_type_schema.json`
 - `docs/question_type_schema.md`
 
+Each stem type includes suitability rules, generation policy, and fallback recommendations. Prompt packages include `requested_questions`, `suitability_hints`, `allow_skip`, and `skip_policy` so the generator does not force unsuitable requests.
+
 Examples:
 
 ```powershell
-& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 3 --question-plan reports/item_generation_prompt_samples/question_plan_u05_bulgogi_three_types.json --output-dir reports/item_generation_prompt_samples
+& "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 4 --question-plan reports/item_generation_prompt_samples/question_plan_u05_bulgogi_suitability.json --output-dir reports/item_generation_prompt_samples
 
 & "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --unit 3 --skill reading --item-count 6 --comprehension-type factual --stem-type "내용 일치" --output-dir reports/item_generation_prompt_samples
 ```
@@ -169,11 +171,14 @@ Generate a small sample:
 Outputs:
 
 - `reports/generated_item_samples/generated_items_*.jsonl`
+- `reports/generated_item_samples/skipped_requests_*.jsonl`
 - `reports/generated_item_samples/generated_items_*.md`
 - `reports/generated_item_samples/generation_errors_*.jsonl`
 - `reports/generated_item_samples/raw_responses/` for raw responses that failed JSON parsing
 
-Generated item records now use `comprehension_type`, `comprehension_type_label`, `stem_type`, `stem_template`, `difficulty_rationale`, and `teacher_edit_suggestions` instead of the earlier temporary `item_type` field.
+Generated item records now use `comprehension_type`, `comprehension_type_label`, `stem_type`, `stem_template`, `difficulty_rationale`, and `teacher_edit_suggestions` instead of the earlier temporary `item_type` field. Model responses may contain both `items` and `skipped_requests`; at least one must be non-empty.
+
+`skipped_requests` is used when a requested question type is not suitable for the passage. This is especially important for evaluative questions, which require passage-internal evidence such as author attitude, viewpoint, purpose, advice, evaluation, persuasion, or feeling.
 
 ## Next Steps
 

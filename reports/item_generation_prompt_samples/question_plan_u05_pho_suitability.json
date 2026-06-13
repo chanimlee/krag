@@ -5,6 +5,11 @@
     "difficulty": "medium"
   },
   {
+    "comprehension_type": "factual",
+    "stem_type": "순서 파악",
+    "difficulty": "hard"
+  },
+  {
     "comprehension_type": "inferential",
     "stem_type": "내용 추론",
     "difficulty": "medium"

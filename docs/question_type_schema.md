@@ -15,6 +15,25 @@
 - 추론적 문항은 지문에 직접 쓰이지 않았지만 지문 근거로 판단 가능한 내용을 묻는다.
 - 평가적 문항은 적절성, 태도, 심정, 목적 등을 판단하되 지문 밖 배경지식을 요구하지 않는다.
 - 모든 문항의 정답과 오답 판단 근거는 기존 지문 안에서 찾을 수 있어야 한다.
+- 요청된 문항 유형이 지문에 적합하지 않으면 억지로 생성하지 않고 `skipped_requests`에 기록한다.
+
+## Suitability And Skip Policy
+
+각 `stem_type`은 다음 필드를 가진다.
+
+- `suitability_rules`: 지문 유형과 필요한 텍스트 특징을 기준으로 적합성을 판단하기 위한 규칙
+- `generation_policy`: 적합성 확인 필요 여부와 passage당 최대 생성 수
+- `fallback_recommendations`: 부적합할 때 대체로 권장할 수 있는 문항 유형
+
+특히 평가적 문항은 지문 안에 필자의 태도, 관점, 목적, 조언, 평가 표현, 설득 의도, 감정 표현 등이 충분할 때만 생성한다. 지문 밖 배경지식이나 학습자의 개인 의견을 요구하는 문항은 생성하지 않는다.
+
+`skipped_requests`에는 다음 정보를 기록한다.
+
+- `comprehension_type`
+- `stem_type`
+- `requested_difficulty`
+- `reason`
+- `suggested_alternatives`
 
 ## 유형 목록
 
