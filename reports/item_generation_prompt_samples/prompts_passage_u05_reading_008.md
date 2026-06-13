@@ -53,22 +53,26 @@ Requested questions:
       "allow_generation": true,
       "require_suitability_check": true,
       "max_items_per_passage": 3
-    }
+    },
+    "request_id": "qreq_001"
   },
   {
     "comprehension_type": "factual",
     "comprehension_type_label": "사실적 문항",
     "stem_type": "순서 파악",
     "stem_templates": [
-      "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오."
+      "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "다음 중 순서가 맞는 것을 고르십시오.",
+      "윗글의 내용에 맞게 순서대로 배열한 것을 고르십시오."
     ],
     "difficulty": "hard",
-    "notes": "사건이나 절차의 흐름, 담화 연결 관계를 바탕으로 문장 위치를 판단한다.",
+    "notes": "사건이나 절차의 흐름, 담화 연결 관계를 바탕으로 문장 위치를 판단한다. 조리법 지문에서는 문장 삽입형보다 절차 배열형 발문을 우선 사용한다.",
     "generation_policy": {
       "allow_generation": true,
       "require_suitability_check": true,
       "max_items_per_passage": 1
-    }
+    },
+    "request_id": "qreq_002"
   },
   {
     "comprehension_type": "inferential",
@@ -83,7 +87,8 @@ Requested questions:
       "allow_generation": true,
       "require_suitability_check": true,
       "max_items_per_passage": 2
-    }
+    },
+    "request_id": "qreq_003"
   },
   {
     "comprehension_type": "evaluative",
@@ -100,13 +105,15 @@ Requested questions:
       "allow_generation": true,
       "require_suitability_check": true,
       "max_items_per_passage": 1
-    }
+    },
+    "request_id": "qreq_004"
   }
 ]
 
 Suitability hints:
 [
   {
+    "request_id": "qreq_001",
     "comprehension_type": "factual",
     "stem_type": "내용 일치",
     "requested_difficulty": "medium",
@@ -145,6 +152,7 @@ Suitability hints:
     ]
   },
   {
+    "request_id": "qreq_002",
     "comprehension_type": "factual",
     "stem_type": "순서 파악",
     "requested_difficulty": "hard",
@@ -182,6 +190,7 @@ Suitability hints:
     ]
   },
   {
+    "request_id": "qreq_003",
     "comprehension_type": "inferential",
     "stem_type": "내용 추론",
     "requested_difficulty": "medium",
@@ -218,6 +227,7 @@ Suitability hints:
     ]
   },
   {
+    "request_id": "qreq_004",
     "comprehension_type": "evaluative",
     "stem_type": "필자 태도 평가",
     "requested_difficulty": "hard",
@@ -388,6 +398,10 @@ Unit grammar and vocabulary constraints:
 }
 
 Constraints:
+- Every requested question has a request_id. Each request_id must appear exactly once in either items or skipped_requests.
+- Do not create replacement items for skipped requests.
+- len(items) + len(skipped_requests) must exactly equal len(requested questions).
+- Every item and every skipped_request must include the original request_id.
 - Generate an item only when the requested question type is suitable for the passage.
 - If a requested question type is unsuitable, do not force an item. Put it in skipped_requests.
 - skipped_requests must include comprehension_type, stem_type, requested_difficulty, reason, and suggested_alternatives.
@@ -395,6 +409,9 @@ Constraints:
 - Evaluative questions must not ask for the learner's personal opinion or outside background knowledge.
 - factual questions check information explicitly stated in the passage.
 - inferential questions ask what can be judged from passage evidence even when not directly stated.
+- inferential answers must not be near-paraphrases of a single passage sentence.
+- inferential answers should require connecting at least two passage clues, or one explicit clue with an implied meaning.
+- inferential questions must not require outside background knowledge.
 - evaluative questions judge appropriateness, validity, attitude, purpose, feeling, or stance, but must not require background knowledge outside the passage.
 - Use one of the listed stem_templates for each requested stem_type, or a very close variant.
 - The correct answer must be clearly grounded in the passage.
@@ -410,6 +427,7 @@ Expected output JSON schema:
 {
   "items": [
     {
+      "request_id": "qreq_001",
       "passage_id": "string",
       "unit": "integer",
       "skill": "reading|listening",
@@ -442,6 +460,7 @@ Expected output JSON schema:
   ],
   "skipped_requests": [
     {
+      "request_id": "qreq_001",
       "comprehension_type": "factual|inferential|evaluative",
       "stem_type": "string from docs/question_type_schema.json",
       "requested_difficulty": "easy|medium|hard",

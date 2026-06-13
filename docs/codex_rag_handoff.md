@@ -311,6 +311,8 @@ skip_policy
 
 요청된 문항 유형이 지문에 적합하지 않으면 모델은 억지로 문항을 만들지 않고 `skipped_requests`에 기록해야 한다. 특히 평가적 문항은 지문 안에 필자의 태도, 관점, 목적, 조언, 평가 표현, 설득 의도, 감정 표현 등 판단 근거가 충분할 때만 생성한다.
 
+각 requested question에는 `qreq_001` 형식의 `request_id`가 부여된다. 모델은 각 `request_id`에 대해 `items` 또는 `skipped_requests` 중 정확히 하나만 출력해야 하며, skipped된 요청을 다른 문항으로 대체 생성하면 안 된다.
+
 ```powershell
 & "C:\Users\chani\AppData\Local\Programs\Python\Python313\python.exe" .\scripts\build_item_generation_prompts.py --passage-id passage_u05_reading_008 --item-count 4 --question-plan reports/item_generation_prompt_samples/question_plan_u05_bulgogi_suitability.json --output-dir reports/item_generation_prompt_samples
 
@@ -375,6 +377,9 @@ reports/generated_item_samples/raw_responses/
 - 모델 응답은 `items`와 `skipped_requests` 리스트를 포함할 수 있다.
 - `items`와 `skipped_requests` 중 하나 이상은 비어 있으면 안 된다.
 - skipped_request의 `stem_type`도 schema에 있어야 하고 `reason`은 비어 있으면 안 된다.
+- requested_questions의 request_id 집합과 출력된 item/skipped_request의 request_id 집합이 정확히 일치해야 한다.
+- 같은 request_id가 item과 skipped_request 양쪽에 동시에 나오면 error 처리한다.
+- 요청에 없는 request_id가 나오거나 요청 수보다 출력 수가 많거나 적으면 error 처리한다.
 
 현재 컴퓨터 세션에서는 `OPENAI_API_KEY`가 설정되어 있지 않아 실제 OpenAI 호출은 실행하지 않았다. 대신 `--dry-run --limit 1`과 mock 비JSON 응답을 사용해 JSON 파싱 실패 시 raw response와 error record가 저장되는지 확인했다.
 

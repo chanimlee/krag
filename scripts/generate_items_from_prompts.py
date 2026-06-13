@@ -25,27 +25,40 @@ QUESTION_SCHEMA_PATH = Path("docs") / "question_type_schema.json"
 
 
 EXPECTED_OUTPUT_SCHEMA: dict[str, Any] = {
-    "item_id": "string",
-    "prompt_id": "string",
-    "unit": "integer",
-    "passage_id": "string",
-    "skill": "reading | listening",
-    "comprehension_type": "factual | inferential | evaluative",
-    "comprehension_type_label": "사실적 문항 | 추론적 문항 | 평가적 문항",
-    "stem_type": "string from docs/question_type_schema.json",
-    "stem_template": "string from the selected stem_type templates or close variant",
-    "question": "string",
-    "options": ["string", "string", "string", "string"],
-    "answer": "integer from 1 to 4",
-    "rationale": "string",
-    "evidence": "string",
-    "grammar_constraints_used": ["string"],
-    "vocabulary_constraints_used": ["string"],
-    "difficulty": "easy | medium | hard",
-    "difficulty_rationale": "string",
-    "teacher_edit_suggestions": ["string"],
-    "generation_model": "string",
-    "generated_at": "ISO-8601 timestamp",
+    "items": [
+        {
+            "request_id": "qreq_001",
+            "passage_id": "string",
+            "unit": "integer",
+            "skill": "reading | listening",
+            "comprehension_type": "factual | inferential | evaluative",
+            "comprehension_type_label": "사실적 문항 | 추론적 문항 | 평가적 문항",
+            "stem_type": "string from docs/question_type_schema.json",
+            "stem_template": "string from the selected stem_type templates or close variant",
+            "question": "string",
+            "options": ["string", "string", "string", "string"],
+            "answer": "integer from 1 to 4",
+            "rationale": "string",
+            "evidence": "string",
+            "grammar_constraints_used": ["string"],
+            "vocabulary_constraints_used": ["string"],
+            "difficulty": "easy | medium | hard",
+            "difficulty_rationale": "string",
+            "teacher_edit_suggestions": ["string"],
+        }
+    ],
+    "skipped_requests": [
+        {
+            "request_id": "qreq_004",
+            "comprehension_type": "factual | inferential | evaluative",
+            "stem_type": "string from docs/question_type_schema.json",
+            "requested_difficulty": "easy | medium | hard",
+            "reason": "string",
+            "suggested_alternatives": [
+                {"comprehension_type": "factual | inferential | evaluative", "stem_type": "string"}
+            ],
+        }
+    ],
 }
 
 
@@ -178,6 +191,12 @@ def build_provider_prompt(package: dict[str, Any]) -> str:
         "Return ONLY valid JSON. Do not wrap the JSON in Markdown fences.\n"
         f"There are {item_count} requested question(s).\n"
         "Return a JSON object with two lists: items and skipped_requests.\n"
+        "Every requested question has a request_id.\n"
+        "For each request_id, output exactly one item OR exactly one skipped_request.\n"
+        "Do not output the same request_id in both items and skipped_requests.\n"
+        "Do not create replacement items when a request is skipped.\n"
+        "len(items) + len(skipped_requests) must exactly equal the number of requested questions.\n"
+        "Every item and skipped_request must include the original request_id.\n"
         "Generate an item only when the requested question type is suitable for the passage.\n"
         "If a request is unsuitable, put it in skipped_requests instead of forcing an item.\n"
         "At least one of items or skipped_requests must be non-empty.\n"
@@ -367,6 +386,46 @@ def request_for_index(package: dict[str, Any], item_index: int) -> dict[str, Any
     return requests[min(item_index - 1, len(requests) - 1)]
 
 
+def requested_request_ids(package: dict[str, Any]) -> list[str]:
+    return [str(request.get("request_id", "")).strip() for request in get_question_requests(package)]
+
+
+def validate_request_id_coverage(
+    package: dict[str, Any],
+    items: list[dict[str, Any]],
+    skipped_requests: list[dict[str, Any]],
+) -> list[str]:
+    requested_ids = requested_request_ids(package)
+    requested_set = set(requested_ids)
+    item_ids = [str(item.get("request_id", "")).strip() for item in items]
+    skip_ids = [str(skip.get("request_id", "")).strip() for skip in skipped_requests]
+    output_ids = item_ids + skip_ids
+    errors: list[str] = []
+
+    if len(requested_ids) != len(requested_set):
+        errors.append("requested_questions contain duplicate request_id values")
+    if len(output_ids) != len(requested_ids):
+        errors.append(
+            f"items + skipped_requests count must equal requested_questions count ({len(output_ids)} != {len(requested_ids)})"
+        )
+    duplicate_output_ids = sorted({request_id for request_id in output_ids if output_ids.count(request_id) > 1})
+    if duplicate_output_ids:
+        errors.append("duplicate output request_id values: " + ", ".join(duplicate_output_ids))
+    both = sorted(set(item_ids) & set(skip_ids))
+    if both:
+        errors.append("request_id appears in both items and skipped_requests: " + ", ".join(both))
+    missing = sorted(requested_set - set(output_ids))
+    if missing:
+        errors.append("missing requested request_id values: " + ", ".join(missing))
+    unexpected = sorted(set(output_ids) - requested_set)
+    if unexpected:
+        errors.append("unexpected output request_id values: " + ", ".join(unexpected))
+    empty_ids = [request_id for request_id in output_ids if not request_id]
+    if empty_ids:
+        errors.append("output contains empty request_id")
+    return errors
+
+
 def stem_template_allowed(stem_template: str, stem_type: str, schema_lookup: dict[str, dict[str, Any]]) -> bool:
     if not stem_template:
         return False
@@ -409,6 +468,7 @@ def enrich_and_validate_item(
 
     item = {
         "item_id": item_id,
+        "request_id": str(raw_item.get("request_id") or "").strip(),
         "prompt_id": prompt_id,
         "unit": package.get("unit"),
         "passage_id": passage_id,
@@ -432,6 +492,8 @@ def enrich_and_validate_item(
     }
 
     errors: list[str] = []
+    if not item["request_id"]:
+        errors.append("request_id must not be empty")
     if item["comprehension_type"] not in {"factual", "inferential", "evaluative"}:
         errors.append("comprehension_type must be factual, inferential, or evaluative")
     if item["stem_type"] not in schema_lookup:
@@ -472,6 +534,7 @@ def enrich_and_validate_skipped_request(
 
     skipped = {
         "skip_id": f"skip_{package.get('prompt_id', 'prompt')}_{skip_index:03d}",
+        "request_id": str(raw_skip.get("request_id") or "").strip(),
         "prompt_id": package.get("prompt_id"),
         "unit": package.get("unit"),
         "passage_id": package.get("passage_id"),
@@ -486,6 +549,8 @@ def enrich_and_validate_skipped_request(
     }
 
     errors: list[str] = []
+    if not skipped["request_id"]:
+        errors.append("skipped_request request_id must not be empty")
     if skipped["comprehension_type"] not in {"factual", "inferential", "evaluative"}:
         errors.append("skipped_request comprehension_type must be factual, inferential, or evaluative")
     if skipped["stem_type"] not in schema_lookup:
@@ -520,6 +585,7 @@ def format_markdown(
                     f"## {item['item_id']}",
                     "",
                     f"- prompt_id: `{item['prompt_id']}`",
+                    f"- request_id: `{item['request_id']}`",
                     f"- passage_id: `{item['passage_id']}`",
                     f"- unit: {item['unit']}",
                     f"- skill: {item['skill']}",
@@ -567,6 +633,7 @@ def format_markdown(
                 [
                     f"### {skipped['skip_id']}",
                     "",
+                    f"- request_id: `{skipped['request_id']}`",
                     f"- comprehension_type: {skipped['comprehension_type']}",
                     f"- stem_type: {skipped['stem_type']}",
                     f"- requested_difficulty: {skipped['requested_difficulty']}",
@@ -691,6 +758,9 @@ def main() -> int:
             )
             continue
 
+        package_items: list[dict[str, Any]] = []
+        package_skipped_requests: list[dict[str, Any]] = []
+
         for item_index, raw_item in enumerate(raw_items, start=1):
             item, validation_errors = enrich_and_validate_item(
                 raw_item=raw_item,
@@ -714,7 +784,7 @@ def main() -> int:
                     }
                 )
                 continue
-            generated_items.append(item)
+            package_items.append(item)
 
         for skip_index, raw_skip in enumerate(raw_skipped_requests, start=1):
             skipped, validation_errors = enrich_and_validate_skipped_request(
@@ -739,7 +809,28 @@ def main() -> int:
                     }
                 )
                 continue
-            skipped_requests.append(skipped)
+            package_skipped_requests.append(skipped)
+
+        coverage_errors = validate_request_id_coverage(package, package_items, package_skipped_requests)
+        if coverage_errors:
+            errors.append(
+                {
+                    "prompt_id": prompt_id,
+                    "passage_id": package.get("passage_id"),
+                    "unit": package.get("unit"),
+                    "error_type": "request_id_coverage_error",
+                    "message": "; ".join(coverage_errors),
+                    "requested_request_ids": requested_request_ids(package),
+                    "item_request_ids": [item.get("request_id") for item in package_items],
+                    "skipped_request_ids": [skip.get("request_id") for skip in package_skipped_requests],
+                    "generation_model": args.model,
+                    "generated_at": generated_at,
+                }
+            )
+            continue
+
+        generated_items.extend(package_items)
+        skipped_requests.extend(package_skipped_requests)
 
     write_jsonl(items_path, generated_items)
     write_jsonl(skipped_path, skipped_requests)

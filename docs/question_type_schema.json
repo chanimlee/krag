@@ -60,7 +60,9 @@
     "comprehension_type_label": "사실적 문항",
     "stem_type": "순서 파악",
     "stem_templates": [
-      "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오."
+      "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "다음 중 순서가 맞는 것을 고르십시오.",
+      "윗글의 내용에 맞게 순서대로 배열한 것을 고르십시오."
     ],
     "allowed_skills": ["reading"],
     "suitable_passage_types": ["recipe", "guide", "article", "blog", "culture_text", "task_text"],
@@ -80,7 +82,7 @@
       {"comprehension_type": "factual", "stem_type": "내용 일치"},
       {"comprehension_type": "factual", "stem_type": "세부 내용 파악"}
     ],
-    "notes": "사건이나 절차의 흐름, 담화 연결 관계를 바탕으로 문장 위치를 판단한다."
+    "notes": "사건이나 절차의 흐름, 담화 연결 관계를 바탕으로 문장 위치를 판단한다. 조리법 지문에서는 문장 삽입형보다 절차 배열형 발문을 우선 사용한다."
   },
   {
     "comprehension_type": "factual",

@@ -136,6 +136,8 @@ Schema files:
 
 Each stem type includes suitability rules, generation policy, and fallback recommendations. Prompt packages include `requested_questions`, `suitability_hints`, `allow_skip`, and `skip_policy` so the generator does not force unsuitable requests.
 
+Each requested question receives a stable `request_id` such as `qreq_001`. The generator must return exactly one `item` or one `skipped_request` for each `request_id`; skipped requests must not be replaced by extra items.
+
 Examples:
 
 ```powershell
@@ -176,7 +178,7 @@ Outputs:
 - `reports/generated_item_samples/generation_errors_*.jsonl`
 - `reports/generated_item_samples/raw_responses/` for raw responses that failed JSON parsing
 
-Generated item records now use `comprehension_type`, `comprehension_type_label`, `stem_type`, `stem_template`, `difficulty_rationale`, and `teacher_edit_suggestions` instead of the earlier temporary `item_type` field. Model responses may contain both `items` and `skipped_requests`; at least one must be non-empty.
+Generated item records now use `comprehension_type`, `comprehension_type_label`, `stem_type`, `stem_template`, `difficulty_rationale`, and `teacher_edit_suggestions` instead of the earlier temporary `item_type` field. Model responses may contain both `items` and `skipped_requests`; at least one must be non-empty. The union of item `request_id` values and skipped request `request_id` values must exactly match the prompt package `requested_questions`.
 
 `skipped_requests` is used when a requested question type is not suitable for the passage. This is especially important for evaluative questions, which require passage-internal evidence such as author attitude, viewpoint, purpose, advice, evaluation, persuasion, or feeling.
 

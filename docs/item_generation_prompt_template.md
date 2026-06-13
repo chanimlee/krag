@@ -37,6 +37,7 @@ You must not create a new passage. Use only the selected existing passage. Gener
   },
   "question_requests": [
     {
+      "request_id": "qreq_001",
       "comprehension_type": "factual",
       "comprehension_type_label": "사실적 문항",
       "stem_type": "내용 일치",
@@ -82,6 +83,11 @@ You must not create a new passage. Use only the selected existing passage. Gener
 - Generate an item only when the requested question type is suitable for the passage.
 - If the passage is unsuitable for a requested question type, record it in `skipped_requests`.
 - Do not force evaluative questions for passages without passage-internal attitude, viewpoint, purpose, advice, evaluation, persuasion, or feeling evidence.
+- Each requested question has a `request_id`.
+- For each `request_id`, output exactly one item or one skipped_request.
+- Do not create a replacement item when a request is skipped.
+- `len(items) + len(skipped_requests)` must exactly equal `len(requested_questions)`.
+- Every item and every skipped_request must include the original `request_id`.
 - The correct answer must be clearly supported by the passage.
 - Distractors must be plausible but inconsistent with, unsupported by, or different from the passage.
 - Keep grammar and vocabulary within the unit constraints as much as possible.
@@ -95,6 +101,7 @@ You must not create a new passage. Use only the selected existing passage. Gener
 {
   "items": [
     {
+      "request_id": "qreq_001",
       "passage_id": "...",
       "unit": 5,
       "skill": "reading",
@@ -116,6 +123,7 @@ You must not create a new passage. Use only the selected existing passage. Gener
   ],
   "skipped_requests": [
     {
+      "request_id": "qreq_004",
       "comprehension_type": "evaluative",
       "stem_type": "필자 태도 평가",
       "requested_difficulty": "hard",
@@ -149,11 +157,16 @@ Suitability hints:
 
 Requirements:
 - Handle exactly the requested number of question requests across `items` and `skipped_requests`.
+- Preserve every `request_id`.
+- For each `request_id`, return exactly one item or exactly one skipped_request.
+- Do not generate substitute items for skipped requests.
 - Generate only suitable requests.
 - If a request is unsuitable, add it to `skipped_requests` instead of forcing an item.
 - Follow the requested comprehension_type, stem_type, stem_templates, and difficulty.
 - factual questions must check information explicitly stated in the passage.
 - inferential questions must be answerable from passage evidence.
+- inferential answer options must not be near-paraphrases of a single passage sentence.
+- inferential correct answers should require connecting at least two passage clues, or one explicit clue with an implied meaning.
 - evaluative questions must judge attitude, purpose, feeling, appropriateness, or validity from passage evidence only.
 - Generate four options.
 - Make exactly one correct answer.
@@ -184,6 +197,9 @@ Suitability hints:
 
 Requirements:
 - Handle exactly the requested number of question requests across `items` and `skipped_requests`.
+- Preserve every `request_id`.
+- For each `request_id`, return exactly one item or exactly one skipped_request.
+- Do not generate substitute items for skipped requests.
 - Generate only suitable requests.
 - If a request is unsuitable, add it to `skipped_requests` instead of forcing an item.
 - Follow the requested comprehension_type, stem_type, stem_templates, and difficulty.
@@ -227,6 +243,8 @@ Check:
 9. evidence, rationale, difficulty_rationale, and teacher_edit_suggestions are complete.
 10. skipped_requests are used when a requested question type is unsuitable.
 11. each skipped_request has comprehension_type, stem_type, requested_difficulty, reason, and suggested_alternatives.
+12. requested question request_id set exactly matches the union of item request_id and skipped_request request_id.
+13. no request_id appears in both items and skipped_requests.
 
 Return validation results as JSON with fields:
 - passed

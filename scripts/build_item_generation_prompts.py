@@ -25,6 +25,7 @@ QUESTION_SCHEMA_PATH = DOCS_DIR / "question_type_schema.json"
 EXPECTED_OUTPUT_SCHEMA = {
     "items": [
         {
+            "request_id": "qreq_001",
             "passage_id": "string",
             "unit": "integer",
             "skill": "reading|listening",
@@ -46,6 +47,7 @@ EXPECTED_OUTPUT_SCHEMA = {
     ],
     "skipped_requests": [
         {
+            "request_id": "qreq_001",
             "comprehension_type": "factual|inferential|evaluative",
             "stem_type": "string from docs/question_type_schema.json",
             "requested_difficulty": "easy|medium|hard",
@@ -244,6 +246,7 @@ def evaluate_suitability(
         )
 
     return {
+        "request_id": request.get("request_id"),
         "comprehension_type": request["comprehension_type"],
         "stem_type": stem_type,
         "requested_difficulty": request.get("difficulty"),
@@ -334,6 +337,15 @@ def expand_or_trim_plan(plan: list[dict[str, Any]], total: int) -> list[dict[str
     return expanded[:total]
 
 
+def assign_request_ids(plan: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    assigned = []
+    for index, request in enumerate(plan, start=1):
+        updated = dict(request)
+        updated["request_id"] = f"qreq_{index:03d}"
+        assigned.append(updated)
+    return assigned
+
+
 def split_plan_by_passage(
     plan: list[dict[str, Any]],
     passages: list[dict[str, Any]],
@@ -341,14 +353,14 @@ def split_plan_by_passage(
     passage_id: str | None,
 ) -> dict[str, list[dict[str, Any]]]:
     if passage_id:
-        return {passages[0]["id"]: expand_or_trim_plan(plan, total)}
+        return {passages[0]["id"]: assign_request_ids(expand_or_trim_plan(plan, total))}
     counts = distribute_counts(total, passages)
     cursor = 0
     full_plan = expand_or_trim_plan(plan, total)
     result: dict[str, list[dict[str, Any]]] = {}
     for passage in passages:
         count = counts.get(passage["id"], 0)
-        result[passage["id"]] = full_plan[cursor : cursor + count]
+        result[passage["id"]] = assign_request_ids(full_plan[cursor : cursor + count])
         cursor += count
     return result
 
@@ -403,6 +415,10 @@ Unit grammar and vocabulary constraints:
 {json.dumps(constraint_payload, ensure_ascii=False, indent=2)}
 
 Constraints:
+- Every requested question has a request_id. Each request_id must appear exactly once in either items or skipped_requests.
+- Do not create replacement items for skipped requests.
+- len(items) + len(skipped_requests) must exactly equal len(requested questions).
+- Every item and every skipped_request must include the original request_id.
 - Generate an item only when the requested question type is suitable for the passage.
 - If a requested question type is unsuitable, do not force an item. Put it in skipped_requests.
 - skipped_requests must include comprehension_type, stem_type, requested_difficulty, reason, and suggested_alternatives.
@@ -410,6 +426,9 @@ Constraints:
 - Evaluative questions must not ask for the learner's personal opinion or outside background knowledge.
 - factual questions check information explicitly stated in the passage.
 - inferential questions ask what can be judged from passage evidence even when not directly stated.
+- inferential answers must not be near-paraphrases of a single passage sentence.
+- inferential answers should require connecting at least two passage clues, or one explicit clue with an implied meaning.
+- inferential questions must not require outside background knowledge.
 - evaluative questions judge appropriateness, validity, attitude, purpose, feeling, or stance, but must not require background knowledge outside the passage.
 - Use one of the listed stem_templates for each requested stem_type, or a very close variant.
 - The correct answer must be clearly grounded in the passage.

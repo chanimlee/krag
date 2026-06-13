@@ -29,11 +29,19 @@
 
 `skipped_requests`에는 다음 정보를 기록한다.
 
+- `request_id`
 - `comprehension_type`
 - `stem_type`
 - `requested_difficulty`
 - `reason`
 - `suggested_alternatives`
+
+모든 `requested_questions`에는 `request_id`가 있어야 한다. 하나의 `request_id`는 생성 문항 `items` 또는 `skipped_requests` 중 정확히 한 곳에만 나타나야 하며, skipped된 요청을 다른 문항으로 대체 생성하지 않는다.
+
+## Special Notes
+
+- `순서 파악`: 조리법 지문에서는 문장 삽입형보다 절차 배열형 발문을 우선 사용한다.
+- `내용 추론`: 지문 문장을 거의 그대로 바꾼 정답지를 만들지 않는다. 두 개 이상의 지문 단서 또는 명시 정보와 함축 의미를 연결해야 판단 가능한 정답을 만든다.
 
 ## 유형 목록
 
