@@ -11,12 +11,26 @@ from .validation_service import sort_options_shortest_to_longest, validate_item,
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNS = ROOT / "outputs" / "webapp_runs"
-DEFAULT_MODEL_NAME = "gpt-4.1-mini"
-MODEL_NAME = os.getenv("OPENAI_MODEL", DEFAULT_MODEL_NAME)
+
+
+def get_config_value(name: str, default: str = "") -> str:
+    value = os.getenv(name)
+    if value:
+        return value
+    try:
+        import streamlit as st
+
+        return str(st.secrets.get(name, default))
+    except Exception:
+        return default
+
+
+DEFAULT_MODEL_NAME = "gpt-5.5"
+MODEL_NAME = get_config_value("OPENAI_MODEL", DEFAULT_MODEL_NAME)
 
 
 def has_api_key() -> bool:
-    return bool(os.getenv("OPENAI_API_KEY"))
+    return bool(get_config_value("OPENAI_API_KEY"))
 
 
 def normalize_options(value: Any) -> dict[str, Any]:
@@ -112,18 +126,26 @@ def run_id() -> str:
 def call_openai_json(system_message: str, user_message: str) -> tuple[dict[str, Any], dict[str, Any]]:
     from openai import OpenAI
 
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    client = OpenAI(api_key=get_config_value("OPENAI_API_KEY"))
     system_message = f"{system_message}\n\nYou must respond with a valid JSON object only. Do not include Markdown fences or explanatory text."
     user_message = f"{user_message}\n\nReturn only a valid JSON object that conforms to the output_schema."
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": user_message},
-        ],
-        response_format={"type": "json_object"},
-        temperature=0.2,
-    )
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message},
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.2,
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            f"OpenAI 모델 '{MODEL_NAME}' 호출에 실패했습니다. "
+            "이 모델의 사용 권한과 모델명을 확인하세요. 사용할 수 없는 경우 "
+            "OPENAI_MODEL 환경변수 또는 Streamlit Secrets를 접근 가능한 모델명으로 변경하세요. "
+            f"원본 오류: {exc}"
+        ) from exc
     raw = response.choices[0].message.content or "{}"
     try:
         parsed = json.loads(raw)

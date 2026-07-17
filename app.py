@@ -32,14 +32,11 @@ if not catalog:
     st.stop()
 
 with st.sidebar:
-    st.header("데이터 상태")
-    for row in data_status():
-        st.write(("✅ " if row["exists"] else "❌ ") + row["path"])
-
     st.header("생성 설정")
     st.caption(f"현재 모델: {MODEL_NAME}")
     labels = [p["display_label"] for p in catalog]
     selected_label = st.selectbox("기준 지문/단원 선택", labels)
+    st.caption(f"선택 항목 전체: {selected_label}")
     selected = catalog[labels.index(selected_label)]
     passage_id = selected["passage_id"]
     generation_mode_label = st.selectbox("생성 모드", ["기존 지문 기반 문항 생성", "유사 지문 생성 + 문항 생성"])
@@ -67,6 +64,10 @@ with st.sidebar:
     if run_mode == "새 문항 생성하기" and not api_ready:
         st.warning("OPENAI_API_KEY가 없어 API mode 실행 버튼이 비활성화됩니다.")
     run_clicked = st.button("실행", disabled=(run_mode == "새 문항 생성하기" and (not api_ready or custom_count_warning)))
+
+    st.header("데이터 상태")
+    for row in data_status():
+        st.write(("✅ " if row["exists"] else "❌ ") + row["path"])
 
 passage = get_passage_by_id(passage_id) or selected
 context = get_context_for_passage(passage_id, generation_mode=generation_mode)
