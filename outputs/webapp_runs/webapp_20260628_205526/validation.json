@@ -1,0 +1,209 @@
+[
+  {
+    "validation_status": "warning",
+    "validation_notes": [
+      "evidence exact match review needed"
+    ],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "1"
+      },
+      "evidence_match_check": {
+        "status": "warning",
+        "exact_match": false,
+        "normalized_match": false
+      },
+      "option_copy_check": {
+        "status": "pass",
+        "option_results": {
+          "1": {
+            "option_text": "오로라 여행은 밤 10시에 시작된다.",
+            "char_len_no_space": 16,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0245,
+            "note": ""
+          },
+          "2": {
+            "option_text": "오로라 여행에는 비상약이 필요 없다.",
+            "char_len_no_space": 16,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.004,
+            "note": ""
+          },
+          "3": {
+            "option_text": "오로라 여행은 3박 4일 동안 진행된다.",
+            "char_len_no_space": 17,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.008,
+            "note": ""
+          },
+          "4": {
+            "option_text": "오로라 여행은 날씨와 상관없이 일정이 같다.",
+            "char_len_no_space": 19,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0079,
+            "note": ""
+          }
+        },
+        "warning_options": []
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  },
+  {
+    "validation_status": "warning",
+    "validation_notes": [
+      "evidence exact match review needed"
+    ],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "1"
+      },
+      "evidence_match_check": {
+        "status": "warning",
+        "exact_match": false,
+        "normalized_match": false
+      },
+      "option_copy_check": {
+        "status": "pass",
+        "option_results": {
+          "1": {
+            "option_text": "따로 신청해야 한다.",
+            "char_len_no_space": 9,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0129,
+            "note": ""
+          },
+          "2": {
+            "option_text": "오전 10시에 시작한다.",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "3": {
+            "option_text": "모두 함께 참여해야 한다.",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "4": {
+            "option_text": "날씨가 좋을 때만 가능하다.",
+            "char_len_no_space": 12,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          }
+        },
+        "warning_options": []
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  },
+  {
+    "validation_status": "warning",
+    "validation_notes": [
+      "evidence exact match review needed"
+    ],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "3"
+      },
+      "evidence_match_check": {
+        "status": "warning",
+        "exact_match": false,
+        "normalized_match": false
+      },
+      "option_copy_check": {
+        "status": "pass",
+        "option_results": {
+          "1": {
+            "option_text": "여행 중 사고를 알리려고",
+            "char_len_no_space": 10,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "2": {
+            "option_text": "날씨 예보를 알려 주려고",
+            "char_len_no_space": 10,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "3": {
+            "option_text": "오로라 여행을 소개하려고",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0041,
+            "note": ""
+          },
+          "4": {
+            "option_text": "여행 예약 방법을 묻기 위해",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          }
+        },
+        "warning_options": []
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  }
+]

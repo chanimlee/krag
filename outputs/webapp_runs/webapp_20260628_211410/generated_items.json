@@ -1,0 +1,112 @@
+{
+  "items": [
+    {
+      "question_id": "SNU3A_2-2_R03_Q1",
+      "skill": "reading",
+      "construct": "factual",
+      "question": "오로라 여행에서 밤 10시부터 하는 것은 무엇입니까?",
+      "options": {
+        "1": "낚시 체험",
+        "2": "오로라 여행",
+        "3": "미술관 관람",
+        "4": "유람선 탑승"
+      },
+      "answer": "2",
+      "explanation": "오로라 여행은 밤 10시부터 시작되기 때문입니다.",
+      "evidence": "오로라 여행은 밤 10시부터 시작됩니다.",
+      "item_type": "factual",
+      "rationale": "오로라 여행은 밤 10시부터 시작되기 때문입니다.",
+      "evidence_sentence": "오로라 여행은 밤 10시부터 시작됩니다.",
+      "option_order_rule": "shortest_to_longest",
+      "option_order_changed": false,
+      "original_options": {
+        "1": "낚시 체험",
+        "2": "오로라 여행",
+        "3": "미술관 관람",
+        "4": "유람선 탑승"
+      },
+      "original_answer": "2",
+      "reordered_options": {
+        "1": "낚시 체험",
+        "2": "오로라 여행",
+        "3": "미술관 관람",
+        "4": "유람선 탑승"
+      },
+      "reordered_answer": "2",
+      "answer_recalculated": false,
+      "answer_recalculation_warning": ""
+    },
+    {
+      "question_id": "SNU3A_2-2_R03_Q2",
+      "skill": "reading",
+      "construct": "inferential",
+      "question": "이 여행에서 준비해야 할 것은 무엇입니까?",
+      "options": {
+        "1": "여권",
+        "2": "카메라",
+        "3": "운동화",
+        "4": "따뜻한 옷"
+      },
+      "answer": "4",
+      "explanation": "지문에 따뜻한 옷과 비상약을 준비물로 적었으므로 따뜻한 옷이 정답입니다.",
+      "evidence": "준비물: 따뜻한 옷, 비상약",
+      "item_type": "inferential",
+      "rationale": "지문에 따뜻한 옷과 비상약을 준비물로 적었으므로 따뜻한 옷이 정답입니다.",
+      "evidence_sentence": "준비물: 따뜻한 옷, 비상약",
+      "option_order_rule": "shortest_to_longest",
+      "option_order_changed": true,
+      "original_options": {
+        "1": "따뜻한 옷",
+        "2": "여권",
+        "3": "카메라",
+        "4": "운동화"
+      },
+      "original_answer": "1",
+      "reordered_options": {
+        "1": "여권",
+        "2": "카메라",
+        "3": "운동화",
+        "4": "따뜻한 옷"
+      },
+      "reordered_answer": "4",
+      "answer_recalculated": true,
+      "answer_recalculation_warning": ""
+    },
+    {
+      "question_id": "SNU3A_2-2_R03_Q3",
+      "skill": "reading",
+      "construct": "evaluative",
+      "question": "이 글을 쓴 목적은 무엇입니까?",
+      "options": {
+        "1": "여행 후기를 쓰려고",
+        "2": "여행 상품을 소개하려고",
+        "3": "여행 예약을 문의하려고",
+        "4": "일정 변경을 안내하려고"
+      },
+      "answer": "2",
+      "explanation": "글에서 여행 기간, 준비물, 선택 관광 등을 안내하며 여행 상품을 소개하고 있습니다.",
+      "evidence": "오로라가 아름답기로 유명한 옐로나이프에 여러분을 초대합니다.",
+      "item_type": "evaluative",
+      "rationale": "글에서 여행 기간, 준비물, 선택 관광 등을 안내하며 여행 상품을 소개하고 있습니다.",
+      "evidence_sentence": "오로라가 아름답기로 유명한 옐로나이프에 여러분을 초대합니다.",
+      "option_order_rule": "shortest_to_longest",
+      "option_order_changed": true,
+      "original_options": {
+        "1": "여행 상품을 소개하려고",
+        "2": "여행 예약을 문의하려고",
+        "3": "일정 변경을 안내하려고",
+        "4": "여행 후기를 쓰려고"
+      },
+      "original_answer": "1",
+      "reordered_options": {
+        "1": "여행 후기를 쓰려고",
+        "2": "여행 상품을 소개하려고",
+        "3": "여행 예약을 문의하려고",
+        "4": "일정 변경을 안내하려고"
+      },
+      "reordered_answer": "2",
+      "answer_recalculated": true,
+      "answer_recalculation_warning": ""
+    }
+  ]
+}

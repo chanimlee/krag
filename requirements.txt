@@ -1,9 +1,11 @@
-numpy
 pandas
-scikit-learn
-joblib
-
-# Later optional dependencies:
-# sentence-transformers
-# faiss-cpu
-# chromadb
+openpyxl
+chromadb
+sentence-transformers
+torch
+rank-bm25
+pydantic
+tqdm
+python-dotenv
+openai
+streamlit

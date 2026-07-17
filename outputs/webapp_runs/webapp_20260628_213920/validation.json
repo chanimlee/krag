@@ -1,0 +1,203 @@
+[
+  {
+    "validation_status": "pass",
+    "validation_notes": [],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "4"
+      },
+      "evidence_match_check": {
+        "status": "pass",
+        "exact_match": true,
+        "normalized_match": true
+      },
+      "option_copy_check": {
+        "status": "pass",
+        "option_results": {
+          "1": {
+            "option_text": "태풍 때문에 걱정돼서요.",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "2": {
+            "option_text": "사진을 찍으려고 해서요.",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "3": {
+            "option_text": "안전하게 여행하려고 해서요.",
+            "char_len_no_space": 13,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0108,
+            "note": ""
+          },
+          "4": {
+            "option_text": "해변과 해산물이 좋기 때문이에요.",
+            "char_len_no_space": 15,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          }
+        },
+        "warning_options": []
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest_without_spaces"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  },
+  {
+    "validation_status": "pass",
+    "validation_notes": [],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "4"
+      },
+      "evidence_match_check": {
+        "status": "pass",
+        "exact_match": true,
+        "normalized_match": true
+      },
+      "option_copy_check": {
+        "status": "pass",
+        "option_results": {
+          "1": {
+            "option_text": "해변에서 놀기 위해서요.",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "2": {
+            "option_text": "해산물을 먹으러 가려고요.",
+            "char_len_no_space": 12,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "3": {
+            "option_text": "사진을 더 많이 찍으려고요.",
+            "char_len_no_space": 12,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "4": {
+            "option_text": "태풍이 올라오기 전에 안전하게 여행하려고요.",
+            "char_len_no_space": 20,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0211,
+            "note": ""
+          }
+        },
+        "warning_options": []
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest_without_spaces"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  },
+  {
+    "validation_status": "pass",
+    "validation_notes": [],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "3"
+      },
+      "evidence_match_check": {
+        "status": "pass",
+        "exact_match": true,
+        "normalized_match": true
+      },
+      "option_copy_check": {
+        "status": "pass",
+        "option_results": {
+          "1": {
+            "option_text": "전혀 걱정하지 않아요.",
+            "char_len_no_space": 10,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "2": {
+            "option_text": "사진 찍는 것이 걱정돼요.",
+            "char_len_no_space": 11,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "3": {
+            "option_text": "기대와 걱정이 섞여 있어요.",
+            "char_len_no_space": 12,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "4": {
+            "option_text": "태풍 때문에 화가 나 있어요.",
+            "char_len_no_space": 12,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          }
+        },
+        "warning_options": []
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest_without_spaces"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  }
+]

@@ -1,0 +1,214 @@
+[
+  {
+    "validation_status": "warning",
+    "validation_notes": [
+      "option copy warning"
+    ],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "2"
+      },
+      "evidence_match_check": {
+        "status": "pass",
+        "exact_match": true,
+        "normalized_match": true
+      },
+      "option_copy_check": {
+        "status": "warning",
+        "option_results": {
+          "1": {
+            "option_text": "낚시 체험",
+            "char_len_no_space": 4,
+            "copied_exact": true,
+            "copied_normalized": true,
+            "ngram_overlap_score": 0.0088,
+            "note": "option text overlaps heavily with passage"
+          },
+          "2": {
+            "option_text": "오로라 여행",
+            "char_len_no_space": 5,
+            "copied_exact": true,
+            "copied_normalized": true,
+            "ngram_overlap_score": 0.0132,
+            "note": "option text overlaps heavily with passage"
+          },
+          "3": {
+            "option_text": "미술관 관람",
+            "char_len_no_space": 5,
+            "copied_exact": true,
+            "copied_normalized": true,
+            "ngram_overlap_score": 0.0132,
+            "note": "option text overlaps heavily with passage"
+          },
+          "4": {
+            "option_text": "유람선 탑승",
+            "char_len_no_space": 5,
+            "copied_exact": true,
+            "copied_normalized": true,
+            "ngram_overlap_score": 0.0132,
+            "note": "option text overlaps heavily with passage"
+          }
+        },
+        "warning_options": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  },
+  {
+    "validation_status": "warning",
+    "validation_notes": [
+      "option copy warning"
+    ],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "4"
+      },
+      "evidence_match_check": {
+        "status": "pass",
+        "exact_match": true,
+        "normalized_match": true
+      },
+      "option_copy_check": {
+        "status": "warning",
+        "option_results": {
+          "1": {
+            "option_text": "여권",
+            "char_len_no_space": 2,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "2": {
+            "option_text": "카메라",
+            "char_len_no_space": 3,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "3": {
+            "option_text": "운동화",
+            "char_len_no_space": 3,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "4": {
+            "option_text": "따뜻한 옷",
+            "char_len_no_space": 4,
+            "copied_exact": true,
+            "copied_normalized": true,
+            "ngram_overlap_score": 0.0088,
+            "note": "option text overlaps heavily with passage"
+          }
+        },
+        "warning_options": [
+          "4"
+        ]
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  },
+  {
+    "validation_status": "pass",
+    "validation_notes": [],
+    "checks": {
+      "required_fields_check": {
+        "status": "pass"
+      },
+      "option_count_check": {
+        "status": "pass",
+        "option_count": 4
+      },
+      "answer_format_check": {
+        "status": "pass",
+        "answer": "2"
+      },
+      "evidence_match_check": {
+        "status": "pass",
+        "exact_match": true,
+        "normalized_match": true
+      },
+      "option_copy_check": {
+        "status": "pass",
+        "option_results": {
+          "1": {
+            "option_text": "여행 후기를 쓰려고",
+            "char_len_no_space": 8,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "2": {
+            "option_text": "여행 상품을 소개하려고",
+            "char_len_no_space": 10,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "3": {
+            "option_text": "여행 예약을 문의하려고",
+            "char_len_no_space": 10,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          },
+          "4": {
+            "option_text": "일정 변경을 안내하려고",
+            "char_len_no_space": 10,
+            "copied_exact": false,
+            "copied_normalized": false,
+            "ngram_overlap_score": 0.0,
+            "note": ""
+          }
+        },
+        "warning_options": []
+      },
+      "option_order_check": {
+        "status": "pass",
+        "rule": "shortest_to_longest"
+      },
+      "answer_consistency_check": {
+        "status": "pass"
+      }
+    }
+  }
+]

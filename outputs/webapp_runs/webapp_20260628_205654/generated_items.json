@@ -1,0 +1,106 @@
+{
+  "items": [
+    {
+      "question_id": "Q1",
+      "type": "factual",
+      "question": "오로라 여행에서 밤 10시부터 하는 활동은 무엇입니까?",
+      "options": {
+        "1": "낚시 체험",
+        "2": "썰매 체험",
+        "3": "오로라 여행",
+        "4": "미술관 관람"
+      },
+      "answer": "3",
+      "explanation": "오로라 여행은 밤 10시부터 시작됩니다.",
+      "evidence": "오로라 여행은 밤 10시부터 시작됩니다.",
+      "rationale": "오로라 여행은 밤 10시부터 시작됩니다.",
+      "evidence_sentence": "오로라 여행은 밤 10시부터 시작됩니다.",
+      "option_order_rule": "shortest_to_longest",
+      "option_order_changed": true,
+      "original_options": {
+        "1": "오로라 여행",
+        "2": "미술관 관람",
+        "3": "낚시 체험",
+        "4": "썰매 체험"
+      },
+      "original_answer": "1",
+      "reordered_options": {
+        "1": "낚시 체험",
+        "2": "썰매 체험",
+        "3": "오로라 여행",
+        "4": "미술관 관람"
+      },
+      "reordered_answer": "3",
+      "answer_recalculated": true,
+      "answer_recalculation_warning": ""
+    },
+    {
+      "question_id": "Q2",
+      "type": "factual",
+      "question": "오로라 여행을 갈 때 꼭 준비해야 하는 것은 무엇입니까?",
+      "options": {
+        "1": "여권",
+        "2": "카메라",
+        "3": "운동화",
+        "4": "따뜻한 옷"
+      },
+      "answer": "4",
+      "explanation": "따뜻한 옷과 비상약을 준비해야 한다고 안내하고 있습니다.",
+      "evidence": "준비물: 따뜻한 옷, 비상약",
+      "rationale": "따뜻한 옷과 비상약을 준비해야 한다고 안내하고 있습니다.",
+      "evidence_sentence": "준비물: 따뜻한 옷, 비상약",
+      "option_order_rule": "shortest_to_longest",
+      "option_order_changed": true,
+      "original_options": {
+        "1": "따뜻한 옷",
+        "2": "여권",
+        "3": "카메라",
+        "4": "운동화"
+      },
+      "original_answer": "1",
+      "reordered_options": {
+        "1": "여권",
+        "2": "카메라",
+        "3": "운동화",
+        "4": "따뜻한 옷"
+      },
+      "reordered_answer": "4",
+      "answer_recalculated": true,
+      "answer_recalculation_warning": ""
+    },
+    {
+      "question_id": "Q3",
+      "type": "inferential",
+      "question": "날씨가 흐리거나 폭설이 내리면 어떻게 될까요?",
+      "options": {
+        "1": "여행이 취소된다",
+        "2": "모든 관광이 무료다",
+        "3": "오로라를 볼 수 있다",
+        "4": "여행 일정이 바뀔 수 있다"
+      },
+      "answer": "4",
+      "explanation": "날씨가 좋지 않으면 여행 일정이 변경될 수 있다고 했으므로, 일정이 바뀔 수 있다는 의미입니다.",
+      "evidence": "폭설이 내리거나 날씨가 흐리면 여행 일정이 변경될 수 있습니다.",
+      "rationale": "날씨가 좋지 않으면 여행 일정이 변경될 수 있다고 했으므로, 일정이 바뀔 수 있다는 의미입니다.",
+      "evidence_sentence": "폭설이 내리거나 날씨가 흐리면 여행 일정이 변경될 수 있습니다.",
+      "option_order_rule": "shortest_to_longest",
+      "option_order_changed": true,
+      "original_options": {
+        "1": "여행 일정이 바뀔 수 있다",
+        "2": "여행이 취소된다",
+        "3": "모든 관광이 무료다",
+        "4": "오로라를 볼 수 있다"
+      },
+      "original_answer": "1",
+      "reordered_options": {
+        "1": "여행이 취소된다",
+        "2": "모든 관광이 무료다",
+        "3": "오로라를 볼 수 있다",
+        "4": "여행 일정이 바뀔 수 있다"
+      },
+      "reordered_answer": "4",
+      "answer_recalculated": true,
+      "answer_recalculation_warning": ""
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "n_items": 3,
+  "construct_counts": {
+    "auto": 3
+  },
+  "model": "gpt-4.1-mini",
+  "generation_mode": "similar"
+}
